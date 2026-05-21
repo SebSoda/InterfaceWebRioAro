@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Censo Poblacional - Río Aro</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-blue: #1F497D; --secondary-blue: #2C5E9E; --light-bg: #F4F7FA;
+            --card-bg: #FFFFFF; --text-dark: #333333; --border-color: #DCE6F1; --accent-green: #28A745;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light-bg); color: var(--text-dark); margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header { background-color: var(--primary-blue); color: white; padding: 25px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        header h1 { margin: 0; font-size: 24px; letter-spacing: 0.5px; }
+        header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card-title { font-size: 18px; color: var(--primary-blue); border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-top: 0; margin-bottom: 20px; font-weight: 600; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #555; }
+        .form-group input, .form-group select { padding: 10px; border: 1px solid #BACCDD; border-radius: 4px; font-size: 14px; background-color: #FFF; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--secondary-blue); }
+        .form-group input:disabled { background-color: #E9ECEF; color: #495057; font-weight: bold; }
+        .miembro-block { border-left: 4px solid var(--secondary-blue); background: #F8FAFC; padding: 15px; margin-bottom: 15px; border-radius: 0 6px 6px 0; }
+        .btn { padding: 12px 20px; border: none; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
+        .btn-primary { background-color: var(--primary-blue); color: white; }
+        .btn-primary:hover { background-color: var(--secondary-blue); }
+        .btn-success { background-color: var(--accent-green); color: white; width: 100%; font-size: 16px; margin-top: 15px; }
+        .btn-danger { background-color: #DC3545; color: white; padding: 6px 12px; font-size: 12px; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>SISTEMA DE CENSADO AUTOMATIZADO</h1>
+        <p>Comunidad "Río Aro" • Registro de Núcleo Familiar</p>
+    </header>
+
+    <form id="censoForm">
+        <!-- SECCIÓN 1: DATOS DE LA VIVIENDA -->
+        <div class="card">
+            <div class="card-title">1. Ubicación y Datos de la Vivienda</div>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Comunidad</label>
+                    <input type="text" id="comunidad" value="Río Aro" required placeholder="Nombre de la comunidad">
+                </div>
+                <div class="form-group">
+                    <label>Torre / Bloque</label>
+                    <input type="text" id="torre" placeholder="Ej: Torre A (Si aplica)">
+                </div>
+                <div class="form-group">
+                    <label>Número de Casa / Apto</label>
+                    <input type="text" id="numeroCasaApto" required placeholder="Ej: Casa Nro 15 / Apto 3B">
+                </div>
+                <div class="form-group">
+                    <label>Condición de la Vivienda</label>
+                    <select id="condicionVivienda" required>
+                        <option value="Excelente">Excelente</option>
+                        <option value="Buena" selected>Buena</option>
+                        <option value="Regular">Regular</option>
+                        <option value="Deteriorada">Deteriorada</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estado del Ocupante</label>
+                    <select id="estadoOcupante" required>
+                        <option value="Residente Permanente" selected>Residente Permanente</option>
+                        <option value="Propietario No Residente">Propietario No Residente</option>
+                        <option value="Arrendatario">Arrendatario</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Peso de Bombona de Gas</label>
+                    <select id="pesoBombona" required>
+                        <option value="10 Kg">10 Kg</option>
+                        <option value="18 Kg">18 Kg</option>
+                        <option value="43 Kg">43 Kg</option>
+                        <option value="Gas Directo">Gas Directo</option>
+                        <option value="No posee">No posee</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fecha de Ingreso a la Comunidad</label>
+                    <input type="date" id="fechaIngreso" required>
+                </div>
+                <div class="form-group">
+                    <label>Beneficios Comunitarios (Asignados)</label>
+                    <input type="text" id="beneficios" placeholder="Ej: Bolsa CLAP, Subsidios">
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: INTEGRANTES DEL NÚCLEO FAMILIAR -->
+        <div class="card">
+            <div class="flex-between">
+                <div class="card-title" style="margin:0; border:none;">2. Integrantes del Núcleo Familiar</div>
+                <button type="button" class="btn btn-primary" onclick="agregarMiembro()">+ Agregar Miembro</button>
+            </div>
+            <div id="miembrosContainer"></div>
+            <button type="submit" class="btn btn-success">Finalizar Registro y Enviar Censo</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzRopB9ccpqs_9lZrDLBf3nxpViaHn8b3VGSkTRf_9H6ZWvmSoIY_M0NhGZ_BIZ8J70LQ/exec";
+    let miembroContador = 0;
+
+    // Función auxiliar para forzar la conversión de fechas a DD/MM/YYYY
+    function formatearFecha(fechaStr) {
+        if (!fechaStr) return "N/A";
+        const partes = fechaStr.split('-');
+        if (partes.length === 3) {
+            return `${partes[2]}/${partes[1]}/${partes[0]}`; // Retorna DD/MM/YYYY
+        }
+        return fechaStr.replace(/-/g, '/'); // Fallback en caso de formatos anómalos
+    }
+
+    function obtenerMarcaTemporal() {
+        const hoy = new Date();
+        const dia = String(hoy.getDate()).padStart(2, '0');
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+        const anio = hoy.getFullYear();
+        const horas = String(hoy.getHours()).padStart(2, '0');
+        const minutos = String(hoy.getMinutes()).padStart(2, '0');
+        const segundos = String(hoy.getSeconds()).padStart(2, '0');
+        return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`;
+    }
+
+    function agregarMiembro() {
+        miembroContador++;
+        const container = document.getElementById('miembrosContainer');
+        const miembroHtml = `
+            <div class="miembro-block" id="miembro_${miembroContador}">
+                <div class="flex-between">
+                    <h5 style="margin:0; color:var(--secondary-blue);">Familiar #${miembroContador}</h5>
+                    ${miembroContador > 1 ? `<button type="button" class="btn btn-danger" onclick="removerMiembro(${miembroContador})">Eliminar</button>` : ''}
+                </div>
+                <div class="grid-3" style="margin-top: 15px;">
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" class="m-nombre" required style="text-transform: uppercase;">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Nacimiento</label>
+                        <input type="date" class="m-fechaNac" required onchange="calcularEdadYValidarId(${miembroContador})">
+                    </div>
+                    <div class="form-group">
+                        <label>Edad (Uso interno de validación)</label>
+                        <input type="number" class="m-edad" readonly required placeholder="Automático">
+                    </div>
+                    <div class="form-group">
+                        <label>Cédula de Identidad</label>
+                        <input type="text" class="m-cedula" required placeholder="Ej: 25444333">
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Teléfono Celular</label>
+                        <input type="tel" class="m-telefono" placeholder="Ej: 04141234567">
+                    </div>
+                    <div class="form-group">
+                        <label>Correo Electrónico</label>
+                        <input type="email" class="m-correo" placeholder="ejemplo@correo.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Género Biológico</label>
+                        <select class="m-genero" required>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Parentesco</label>
+                        <select class="m-parentesco" required onchange="actualizarCamposPorParentesco(${miembroContador})">
+                            <option value="Jefe(a) de Hogar">Jefe(a) de Hogar</option>
+                            <option value="Esposo(a)">Esposo(a)</option>
+                            <option value="Hijo(a)">Hijo(a)</option>
+                            <option value="Padre/Madre">Padre/Madre</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado Civil</label>
+                        <select class="m-civil" required>
+                            <option value="Soltero(a)">Soltero(a)</option>
+                            <option value="Casado(a)">Casado(a)</option>
+                            <option value="Divorciado(a)">Divorciado(a)</option>
+                            <option value="Viudo(a)">Viudo(a)</option>
+                            <option value="Unión Estable">Unión Estable</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Está Embarazada?</label>
+                        <select class="m-embarazo" required><option value="No">No</option><option value="Sí">Sí</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>¿Lactante (0-11 meses)?</label>
+                        <select class="m-lactante" required><option value="No">No</option><option value="Sí">Sí</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Profesión / Ocupación / Empresa</label>
+                        <input type="text" class="m-profesion" placeholder="Ej: Ingeniero / Comerciante / Empresa" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Deporte Practicado</label>
+                        <input type="text" class="m-deporte" value="Ninguno">
+                    </div>
+                    <div class="form-group">
+                        <label>Estudio Cursado</label>
+                        <select class="m-estudio" required>
+                            <option value="Ninguno">Ninguno</option>
+                            <option value="Primaria">Primaria</option>
+                            <option value="Secundaria">Secundaria</option>
+                            <option value="Técnico">Técnico</option>
+                            <option value="Universitario" selected>Universitario</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Discapacidad / Necesidad Especial</label>
+                        <input type="text" class="m-discapacidad" value="Ninguna">
+                    </div>
+                    <div class="form-group">
+                        <label>Enfermedad Crónica / Medicamento</label>
+                        <input type="text" class="m-enfermedad" value="Ninguna">
+                    </div>
+                    <div class="form-group">
+                        <label>Centro de Votación</label>
+                        <input type="text" class="m-votacion" required placeholder="Nombre de la Escuela/Centro">
+                    </div>
+                </div>
+            </div>`;
+        container.insertAdjacentHTML('beforeend', miembroHtml);
+        actualizarCamposPorParentesco(miembroContador);
+    }
+
+    function removerMiembro(id) {
+        document.getElementById(`miembro_${id}`).remove();
+        propagarDatosJefeAMenores();
+    }
+
+    function calcularEdadYValidarId(idNum) {
+        const block = document.getElementById(`miembro_${idNum}`);
+        const fechaNacValue = block.querySelector('.m-fechaNac').value;
+        const edadInput = block.querySelector('.m-edad');
+        const cedulaInput = block.querySelector('.m-cedula');
+
+        if (!fechaNacValue) return;
+
+        const nacimiento = new Date(fechaNacValue);
+        const hoy = new Date();
+        let edad = hoy.getFullYear() - nacimiento.getFullYear();
+        const mes = hoy.getMonth() - nacimiento.getMonth();
+        if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) { edad--; }
+
+        edadInput.value = edad;
+
+        if (edad < 18) {
+            cedulaInput.value = "MENOR S/C";
+            cedulaInput.disabled = true;
+        } else {
+            if (cedulaInput.value === "MENOR S/C") cedulaInput.value = "";
+            cedulaInput.disabled = false;
+        }
+        propagarDatosJefeAMenores();
+    }
+
+    function actualizarCamposPorParentesco(idNum) {
+        const block = document.getElementById(`miembro_${idNum}`);
+        const parentesco = block.querySelector('.m-parentesco').value;
+        const telefonoInput = block.querySelector('.m-telefono');
+        const correoInput = block.querySelector('.m-correo');
+
+        telefonoInput.oninput = null;
+        correoInput.oninput = null;
+
+        if (parentesco === "Jefe(a) de Hogar") {
+            telefonoInput.required = true;
+            correoInput.required = true;
+            telefonoInput.oninput = propagarDatosJefeAMenores;
+            correoInput.oninput = propagarDatosJefeAMenores;
+        } else {
+            telefonoInput.required = false;
+            correoInput.required = false;
+        }
+        propagarDatosJefeAMenores();
+    }
+
+    function propagarDatosJefeAMenores() {
+        const bloques = document.querySelectorAll('.miembro-block');
+        let telefonoJefe = "", correoJefe = "";
+
+        bloques.forEach(block => {
+            if (block.querySelector('.m-parentesco').value === "Jefe(a) de Hogar") {
+                telefonoJefe = block.querySelector('.m-telefono').value;
+                correoJefe = block.querySelector('.m-correo').value;
+            }
+        });
+
+        bloques.forEach(block => {
+            const edad = parseInt(block.querySelector('.m-edad').value) || 0;
+            const telefonoInput = block.querySelector('.m-telefono');
+            const correoInput = block.querySelector('.m-correo');
+
+            if (edad < 18 && edad > 0) {
+                telefonoInput.value = telefonoJefe;
+                correoInput.value = correoJefe;
+                telefonoInput.disabled = true;
+                correoInput.disabled = true;
+            } else {
+                telefonoInput.disabled = false;
+                correoInput.disabled = false;
+            }
+        });
+    }
+
+    document.getElementById('censoForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const timestampGenerado = obtenerMarcaTemporal();
+        const datosEnvio = { 
+            marcaTemporal: timestampGenerado, 
+            vivienda: {}, 
+            miembros: [] 
+        };
+        const filasParaExcel = [];
+
+        // Aplicamos la conversión de fechas con formato /
+        const viviendaGlobal = {
+            comunidad: document.getElementById('comunidad').value,
+            torre: document.getElementById('torre').value || "N/A",
+            numeroCasaApto: document.getElementById('numeroCasaApto').value,
+            condicionVivienda: document.getElementById('condicionVivienda').value,
+            estadoOcupante: document.getElementById('estadoOcupante').value,
+            pesoBombona: document.getElementById('pesoBombona').value,
+            fechaIngreso: formatearFecha(document.getElementById('fechaIngreso').value),
+            beneficios: document.getElementById('beneficios').value || "Ninguno"
+        };
+        datosEnvio.vivienda = viviendaGlobal;
+
+        const bloques = document.querySelectorAll('.miembro-block');
+        let tieneJefeMayorDeEdad = false;
+
+        bloques.forEach(block => {
+            const edad = parseInt(block.querySelector('.m-edad').value) || 0;
+            const parentesco = block.querySelector('.m-parentesco').value;
+            const cedula = block.querySelector('.m-cedula').value; 
+            const telefono = block.querySelector('.m-telefono').value;
+            const correo = block.querySelector('.m-correo').value;
+
+            if (parentesco === "Jefe(a) de Hogar" && edad >= 18) {
+                tieneJefeMayorDeEdad = true;
+            }
+
+            const miembro = {
+                nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
+                fechaNacimiento: formatearFecha(block.querySelector('.m-fechaNac').value),
+                cedulaIdentidad: cedula,
+                telefonoCelular: telefono || "N/A",
+                correoElectronico: correo || "N/A",
+                generoBiologico: block.querySelector('.m-genero').value,
+                parentesco: parentesco,
+                estadoCivil: block.querySelector('.m-civil').value,
+                embarazadas: block.querySelector('.m-embarazo').value,
+                lactantes: block.querySelector('.m-lactante').value,
+                profesion: block.querySelector('.m-profesion').value,
+                ocupacion: block.querySelector('.m-profesion').value,
+                deportePracticado: block.querySelector('.m-deporte').value,
+                estudioCursado: block.querySelector('.m-estudio').value,
+                tipoDiscapacidad: block.querySelector('.m-discapacidad').value,
+                enfermedadesCronicas: block.querySelector('.m-enfermedad').value,
+                centroVotacion: block.querySelector('.m-votacion').value
+            };
+
+            datosEnvio.miembros.push(miembro);
+
+            // Mapeo riguroso de las 31 columnas exactas solicitadas (Sin la Edad y con la Marca Temporal)
+            filasParaExcel.push({
+                "Marca temporal": timestampGenerado,
+                "Nombre completo": miembro.nombreCompleto,
+                "Cedula de identidad": miembro.cedulaIdentidad,
+                "Fecha de nacimiento": miembro.fechaNacimiento,
+                "Genero Biológico": miembro.generoBiologico,
+                "Estado civil": miembro.estadoCivil,
+                "Parentesco": miembro.parentesco,
+                "Embarazadas": miembro.embarazadas,
+                "Lactantes 0 - 11 meses": miembro.lactantes,
+                "Numero de teléfono celular": miembro.telefonoCelular,
+                "Correo electrónico": miembro.correoElectronico,
+                "Profesión": miembro.profesion,
+                "Ocupación": miembro.ocupacion,
+                "Empresa": "Ver campo profesión",
+                "Deporte practicado": miembro.deportePracticado,
+                "Estudio cursado": miembro.estudioCursado,
+                "Tipo de discapacidad": miembro.tipoDiscapacidad,
+                "Necesidades especiales": "Ver campo discapacidad",
+                "Enfermedades crónicas": miembro.enfermedadesCronicas,
+                "Medicamento consumido": "Ver campo enfermedad",
+                "Peso de bombona": viviendaGlobal.pesoBombona,
+                "Ubicación de centro Votación": miembro.centroVotacion,
+                "Fecha de ingreso": viviendaGlobal.fechaIngreso,
+                "Fecha de egreso": "N/A",
+                "Fecha de re-ingreso": "N/A",
+                "Estado de ocupante": viviendaGlobal.estadoOcupante,
+                "Comunidad": viviendaGlobal.comunidad,
+                "Torre": viviendaGlobal.torre,
+                "Numero de Casa / Apto": viviendaGlobal.numeroCasaApto,
+                "Condición de Vivienda": viviendaGlobal.condicionVivienda,
+                "Beneficios": viviendaGlobal.beneficios
+            });
+        });
+
+        if (!tieneJefeMayorDeEdad) {
+            alert("Error de validación: El núcleo familiar debe poseer un 'Jefe(a) de Hogar' mayor de edad (≥ 18 años).");
+            return;
+        }
+
+        exportarAExcelNativo(filasParaExcel, viviendaGlobal.numeroCasaApto);
+
+        alert("Archivo Excel unificado generado. Transmitiendo registros al servidor...");
+        fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datosEnvio)
+        })
+        .then(() => {
+            alert("¡Censo Completado con Éxito! Datos guardados en la nube y archivo Excel descargado.");
+            document.getElementById('censoForm').reset();
+            document.getElementById('miembrosContainer').innerHTML = '';
+            agregarMiembro();
+        }).catch(err => {
+            alert("Error de red. El archivo Excel local servirá como respaldo válido.");
+            console.error(err);
+        });
+    });
+
+    function exportarAExcelNativo(datosFilas, numeroCasa) {
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(datosFilas);
+        XLSX.utils.book_append_sheet(wb, ws, "Datos_Censo");
+        XLSX.writeFile(wb, `Censo_RioAro_Casa_${numeroCasa.replace(/\s+/g, '_')}.xlsx`);
+    }
+
+    window.onload = function() { agregarMiembro(); };
+</script>
+</body>
+</html>
