@@ -342,13 +342,15 @@
 
     function calcularEdadYValidarId(idNum) {
         const block = document.getElementById(`miembro_${idNum}`);
+        if (!block) return;
+        
         const fechaNacValue = block.querySelector('.m-fechaNac').value;
         const edadInput = block.querySelector('.m-edad');
         const cedulaInput = block.querySelector('.m-cedula');
 
         if (!fechaNacValue) return;
 
-        const nacimiento = new Date(fechaNacValue);
+        const nacimiento = new Date(fechaNacValue + 'T00:00:00');
         const hoy = new Date();
         let edad = hoy.getFullYear() - nacimiento.getFullYear();
         const mes = hoy.getMonth() - nacimiento.getMonth();
@@ -457,10 +459,23 @@
         let tieneJefeMayorDeEdad = false;
 
         bloques.forEach(block => {
-            const edad = parseInt(block.querySelector('.m-edad').value) || 0;
             const parentesco = block.querySelector('.m-parentesco').value;
             const fechaNacRaw = block.querySelector('.m-fechaNac').value;
             
+            // Recalcular edad directamente desde la fecha
+            let edad = 0;
+            if (fechaNacRaw) {
+                const nac = new Date(fechaNacRaw + 'T00:00:00');
+                const hoy = new Date();
+                edad = hoy.getFullYear() - nac.getFullYear();
+                const m = hoy.getMonth() - nac.getMonth();
+                if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) { edad--; }
+            }
+
+            if (parentesco === "JEFE DE FAMILIA" && edad >= 18) {
+                tieneJefeMayorDeEdad = true;
+            }
+
             // Si es menor de edad, generamos el ID único para la BD y el Excel
             let cedulaFinal = block.querySelector('.m-cedula').value;
             if (edad < 18) {
