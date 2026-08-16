@@ -261,13 +261,13 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>Estudio Cursado</label>
+                        <label>Nivel educativo</label>
                         <select class="m-estudio">
                             <option value="NA" selected>Ninguno</option>
                             <option value="PRESCOLAR">Prescolar</option>
                             <option value="PRIMARIA">Primaria</option>
                             <option value="BACHILLER">Bachiller</option>
-                            <option value="TSU">Tecnico Superior (TSU)</option>
+                            <option value="TECNICO SUPERIOR">Tecnico Superior (TSU)</option>
                             <option value="UNIVERSITARIO">Universitario</option>
                             <option value="POSGRADO">Posgrado</option>
                             <option value="OTRO">Otro</option>
@@ -324,7 +324,7 @@
                         <select class="m-beneficio">
                             <option value="NINGUNA" selected>Ninguna</option>
                             <option value="Jubilacion">Jubilacion</option>
-                            <option value="Pención">Pención</option>
+                            <option value="Pensión">Pensión</option>
                             <option value="CarnetPatria">Carnet de la Patria</option>
                             <option value="Otro">Otro</option>
                         </select>
@@ -364,6 +364,20 @@
             cedulaInput.disabled = false;
         }
         propagarDatosJefeAMenores();
+    }
+
+    function generarIdMenor(comunidad, torre, casa, fechaNacStr) {
+        if (!fechaNacStr) return "MENOR_S_C";
+        const partes = fechaNacStr.split('-'); // [AÑO, MES, DÍA]
+        if (partes.length === 3) {
+            const anio = partes[0];
+            const mes = partes[1];
+            const dia = partes[2];
+            // Limpiamos espacios o caracteres especiales de la casa si es necesario
+            const casaLimpia = casa.replace(/\s+/g, '');
+            return `${comunidad}${torre}${casaLimpia}${dia}${mes}${anio}`;
+        }
+        return `${comunidad}${torre}${casa}`;
     }
 
     function actualizarCamposPorParentesco(idNum) {
@@ -445,20 +459,20 @@
         bloques.forEach(block => {
             const edad = parseInt(block.querySelector('.m-edad').value) || 0;
             const parentesco = block.querySelector('.m-parentesco').value;
-            const cedula = block.querySelector('.m-cedula').value; 
-            const telefono = block.querySelector('.m-telefono').value;
-            const correo = block.querySelector('.m-correo').value;
-
-            if (parentesco === "JEFE DE FAMILIA" && edad >= 18) {
-                tieneJefeMayorDeEdad = true;
+            const fechaNacRaw = block.querySelector('.m-fechaNac').value;
+            
+            // Si es menor de edad, generamos el ID único para la BD y el Excel
+            let cedulaFinal = block.querySelector('.m-cedula').value;
+            if (edad < 18) {
+                cedulaFinal = generarIdMenor(viviendaGlobal.comunidad, viviendaGlobal.torre, viviendaGlobal.numeroCasaApto, fechaNacRaw);
             }
 
             const miembro = {
                 nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
-                fechaNacimiento: formatearFecha(block.querySelector('.m-fechaNac').value),
-                cedulaIdentidad: cedula,
-                telefonoCelular: telefono || "N/A",
-                correoElectronico: correo || "N/A",
+                fechaNacimiento: formatearFecha(fechaNacRaw),
+                cedulaIdentidad: cedulaFinal, // <--- Aquí se inyecta el identificador único
+                telefonoCelular: block.querySelector('.m-telefono').value || "N/A",
+                correoElectronico: block.querySelector('.m-correo').value || "N/A",
                 generoBiologico: block.querySelector('.m-genero').value,
                 parentesco: parentesco,
                 estadoCivil: block.querySelector('.m-civil').value,
@@ -482,7 +496,7 @@
             filasParaExcel.push({
                 "Marca temporal": timestampGenerado,
                 "Nombre completo": miembro.nombreCompleto,
-                "Cedula de identidad": miembro.cedulaIdentidad,
+                "Cedula de identidad": miembro.cedulaIdentidad, // Saldrá el ID único (ej: MZA15A104092010)
                 "Fecha de nacimiento": miembro.fechaNacimiento,
                 "Genero Biológico": miembro.generoBiologico,
                 "Estado civil": miembro.estadoCivil,
@@ -495,7 +509,7 @@
                 "Ocupación": miembro.ocupacion,
                 "Empresa": miembro.Empresa,
                 "Deporte practicado": miembro.deportePracticado,
-                "Estudio cursado": miembro.estudioCursado,
+                "Nivel educativo": miembro.estudioCursado,
                 "Tipo de discapacidad": miembro.tipoDiscapacidad,
                 "Necesidades especiales": miembro.necesidadEspecial,
                 "Enfermedades crónicas": miembro.enfermedadesCronicas,
