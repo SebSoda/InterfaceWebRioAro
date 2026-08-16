@@ -485,6 +485,7 @@
             const miembro = {
                 nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
                 fechaNacimiento: formatearFecha(fechaNacRaw),
+                edad: edad,
                 cedulaIdentidad: cedulaFinal, // <--- Aquí se inyecta el identificador único
                 telefonoCelular: block.querySelector('.m-telefono').value || "N/A",
                 correoElectronico: block.querySelector('.m-correo').value || "N/A",
@@ -513,6 +514,7 @@
                 "Nombre completo": miembro.nombreCompleto,
                 "Cedula de identidad": miembro.cedulaIdentidad, // Saldrá el ID único (ej: MZA15A104092010)
                 "Fecha de nacimiento": miembro.fechaNacimiento,
+                "Edad": miembro.edad,
                 "Genero Biológico": miembro.generoBiologico,
                 "Estado civil": miembro.estadoCivil,
                 "Parentesco": miembro.parentesco,
