@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Censo Poblacional - Río Aro</title>
+    <title>Censo Poblacional - Octava Estrella</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -37,7 +37,7 @@
 <div class="container">
     <header>
         <h1>SISTEMA DE CENSADO AUTOMATIZADO</h1>
-        <p>Comunidad "Río Aro" • Registro de Núcleo Familiar</p>
+        <p>Octava Estrella de Guayana • Registro de Núcleo Familiar</p>
     </header>
 
     <form id="censoForm">
@@ -48,11 +48,11 @@
                     <label>Comunidad</label>
                     <select id="comunidad" required>
                         <option value="MZA" selected>Manzanas</option>
-                        <option value="19A">Edificio 19 A</option>
-                        <option value="19B">Edificio 19 B</option>
-                        <option value="19C">Edificio 19 C</option>
-                        <option value="20A">Edificio 20 A</option>
-                        <option value="20B">Edificio 20 B</option>
+                        <option value="19A">Edificio 19A</option>
+                        <option value="19B">Edificio 19B</option>
+                        <option value="19C">Edificio 19C</option>
+                        <option value="20A">Edificio 20A</option>
+                        <option value="20B">Edificio 20B</option>
                         <option value="ENSE">Ensenada</option>
                         <option value="SIPAO">Sipao</option>
                         <option value="YOCO">Yocoima</option>
@@ -93,38 +93,30 @@
                         <option value="PROPIA" selected>Vivienda Propia</option>
                         <option value="ALQUILER">Vivienda Alquilada</option>
                         <option value="DE UN FAMILIAR">Vivienda de Familiar</option>
-                        <option value="ARRiMADO">Visitante</option>
+                        <option value="VISITANTE">Visitante</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Estado del Ocupante</label>
                     <select id="estadoOcupante" required>
-                        <option value="1" selected>Ocupacion Activa</option>
-                        <option value="2">Ocupacion Iregular</option>
-                        <option value="0">Propietario Ausente</option>
+                        <option value="1" selected>Activo</option>
+                        <option value="2">Irregular</option>
+                        <option value="0">Ausente</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Peso de Bombona de Gas</label>
                     <select id="pesoBombona" required>
-                        <option value="10 Kg">10 Kg</option>
-                        <option value="18 Kg">18 Kg</option>
-                        <option value="43 Kg">43 Kg</option>
-                        <option value="Gas Directo">Gas Directo</option>
+                        <option value="10 KG">10 Kg</option>
+                        <option value="18 KG">18 Kg</option>
+                        <option value="43 KG">43 Kg</option>
+                        <option value="GAS DIRECTO">Gas Directo</option>
                         <option value="NA" selected>No posee</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Fecha de Ingreso a la Comunidad</label>
                     <input type="date" id="fechaIngreso" required>
-                </div>
-                <div class="form-group">
-                    <label>Fecha de Egreso de la Comunidad</label>
-                    <input type="date" id="fechaEgreso">
-                </div>
-                <div class="form-group">
-                    <label>Fecha de Reingreso a la Comunidad</label>
-                    <input type="date" id="fechaReingreso">
                 </div>
             </div>
         </div>
@@ -444,8 +436,6 @@
             estadoOcupante: document.getElementById('estadoOcupante').value,
             pesoBombona: document.getElementById('pesoBombona').value,
             fechaIngreso: formatearFecha(document.getElementById('fechaIngreso').value),
-            fechaEgreso: formatearFecha(document.getElementById('fechaEgreso').value),
-            fechaReingreso: formatearFecha(document.getElementById('fechaReingreso').value),
         };
         datosEnvio.vivienda = viviendaGlobal;
 
@@ -497,8 +487,8 @@
                 "Genero Biológico": miembro.generoBiologico,
                 "Estado civil": miembro.estadoCivil,
                 "Parentesco": miembro.parentesco,
-                "Embarazadas": miembro.embarazadas,
-                "Lactantes 0 - 11 meses": miembro.lactantes,
+                "¿Embarazada?": miembro.embarazadas,
+                "¿Lactante 0 - 11 meses?": miembro.lactantes,
                 "Numero de teléfono celular": miembro.telefonoCelular,
                 "Correo electrónico": miembro.correoElectronico,
                 "Profesión": miembro.profesion,
@@ -513,8 +503,6 @@
                 "Peso de bombona": viviendaGlobal.pesoBombona,
                 "Ubicación de centro Votación": miembro.centroVotacion,
                 "Fecha de ingreso": viviendaGlobal.fechaIngreso,
-                "Fecha de egreso": viviendaGlobal.fechaEgreso,
-                "Fecha de re-ingreso": viviendaGlobal.fechaReingreso,
                 "Estado de ocupante": viviendaGlobal.estadoOcupante,
                 "Comunidad": viviendaGlobal.comunidad,
                 "Torre": viviendaGlobal.torre,
