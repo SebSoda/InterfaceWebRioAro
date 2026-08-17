@@ -216,7 +216,7 @@
                     <div class="form-group">
                         <label>Estado Civil</label>
                         <select class="m-civil" required>
-                            <option value="S">Soltero(a) selected</option>
+                            <option value="S">Soltero(a)</option>
                             <option value="C">Casado(a)</option>
                             <option value="D">Divorciado(a)</option>
                             <option value="V">Viudo(a)</option>
@@ -337,7 +337,6 @@
 
     function removerMiembro(id) {
         document.getElementById(`miembro_${id}`).remove();
-        propagarDatosJefeAMenores();
     }
 
     function calcularEdadYValidarId(idNum) {
@@ -365,17 +364,15 @@
             if (cedulaInput.value === "MENOR S/C") cedulaInput.value = "";
             cedulaInput.disabled = false;
         }
-        propagarDatosJefeAMenores();
     }
 
     function generarIdMenor(comunidad, torre, casa, fechaNacStr) {
         if (!fechaNacStr) return "MENOR_S_C";
-        const partes = fechaNacStr.split('-'); // [AÑO, MES, DÍA]
+        const partes = fechaNacStr.split('-');
         if (partes.length === 3) {
             const anio = partes[0];
             const mes = partes[1];
             const dia = partes[2];
-            // Limpiamos espacios o caracteres especiales de la casa si es necesario
             const casaLimpia = casa.replace(/\s+/g, '');
             return `${comunidad}${torre}${casaLimpia}${dia}${mes}${anio}`;
         }
@@ -388,49 +385,17 @@
         const telefonoInput = block.querySelector('.m-telefono');
         const correoInput = block.querySelector('.m-correo');
 
-        telefonoInput.oninput = null;
-        correoInput.oninput = null;
-
         if (parentesco === "JEFE DE FAMILIA") {
             telefonoInput.required = true;
             correoInput.required = true;
-            telefonoInput.oninput = propagarDatosJefeAMenores;
-            correoInput.oninput = propagarDatosJefeAMenores;
         } else {
             telefonoInput.required = false;
             correoInput.required = false;
         }
-        propagarDatosJefeAMenores();
     }
 
     function propagarDatosJefeAMenores() {
-        const bloques = document.querySelectorAll('.miembro-block');
-        let telefonoJefe = "", correoJefe = "";
-
-        bloques.forEach(block => {
-            if (block.querySelector('.m-parentesco').value === "JEFE DE FAMILIA") {
-                telefonoJefe = block.querySelector('.m-telefono').value;
-                correoJefe = block.querySelector('.m-correo').value;
-            }
-        });
-
-        bloques.forEach(block => {
-            const edad = parseInt(block.querySelector('.m-edad').value) || 0;
-            const telefonoInput = block.querySelector('.m-telefono');
-            const correoInput = block.querySelector('.m-correo');
-
-            if (edad < 18 && edad > 0) {
-                telefonoInput.value = telefonoJefe || "NA";
-                correoInput.value = correoJefe || "NA";
-                telefonoInput.disabled = true;
-                correoInput.disabled = true;
-            } else {
-                if(block.querySelector('.m-parentesco').value !== "JEFE DE FAMILIA"){
-                    telefonoInput.disabled = false;
-                    correoInput.disabled = false;
-                }
-            }
-        });
+        // Función deshabilitada para permitir la edición libre de teléfono y correo en menores
     }
 
     document.getElementById('censoForm').addEventListener('submit', function(e) {
@@ -462,7 +427,6 @@
             const parentesco = block.querySelector('.m-parentesco').value;
             const fechaNacRaw = block.querySelector('.m-fechaNac').value;
             
-            // Recalcular edad directamente desde la fecha
             let edad = 0;
             if (fechaNacRaw) {
                 const nac = new Date(fechaNacRaw + 'T00:00:00');
@@ -476,7 +440,6 @@
                 tieneJefeMayorDeEdad = true;
             }
 
-            // Si es menor de edad, generamos el ID único para la BD y el Excel
             let cedulaFinal = block.querySelector('.m-cedula').value;
             if (edad < 18) {
                 cedulaFinal = generarIdMenor(viviendaGlobal.comunidad, viviendaGlobal.torre, viviendaGlobal.numeroCasaApto, fechaNacRaw);
@@ -486,7 +449,7 @@
                 nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
                 fechaNacimiento: formatearFecha(fechaNacRaw),
                 edad: edad,
-                cedulaIdentidad: cedulaFinal, // <--- Aquí se inyecta el identificador único
+                cedulaIdentidad: cedulaFinal,
                 telefonoCelular: block.querySelector('.m-telefono').value || "N/A",
                 correoElectronico: block.querySelector('.m-correo').value || "N/A",
                 generoBiologico: block.querySelector('.m-genero').value,
@@ -512,7 +475,7 @@
             filasParaExcel.push({
                 "Marca temporal": timestampGenerado,
                 "Nombre completo": miembro.nombreCompleto,
-                "Cedula de identidad": miembro.cedulaIdentidad, // Saldrá el ID único (ej: MZA15A104092010)
+                "Cedula de identidad": miembro.cedulaIdentidad,
                 "Fecha de nacimiento": miembro.fechaNacimiento,
                 "Edad": miembro.edad,
                 "Genero Biológico": miembro.generoBiologico,
