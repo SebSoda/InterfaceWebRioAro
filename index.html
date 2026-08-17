@@ -522,9 +522,7 @@
         })
         .then(() => {
             alert("¡Censo Completado con Éxito! Datos guardados en la nube y archivo Excel descargado.");
-            document.getElementById('censoForm').reset();
-            document.getElementById('miembrosContainer').innerHTML = '';
-            agregarMiembro();
+            location.reload();
         }).catch(err => {
             alert("Error de red. El archivo Excel local servirá como respaldo válido.");
             console.error(err);
