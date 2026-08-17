@@ -97,6 +97,14 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Estado del Ocupante</label>
+                    <select id="estadoOcupante" required>
+                        <option value="1" selected>Activo</option>
+                        <option value="2">Irregular</option>
+                        <option value="0">Ausente</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Peso de Bombona de Gas</label>
                     <select id="pesoBombona" required>
                         <option value="10 KG">10 Kg</option>
@@ -213,15 +221,6 @@
                             <option value="D">Divorciado(a)</option>
                             <option value="V">Viudo(a)</option>
                             <option value="U">Unión Estable</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Estado del Ocupante</label>
-                        <select class="m-estadoOcupante" required>
-                            <option value="1" selected>Activo</option>
-                            <option value="2">Irregular</option>
-                            <option value="0">Ausente</option>
                         </select>
                     </div>
                     
@@ -487,7 +486,6 @@
                 nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
                 fechaNacimiento: formatearFecha(fechaNacRaw),
                 edad: edad,
-                estadoOcupante: block.querySelector('.m-estadoOcupante').value, 
                 cedulaIdentidad: cedulaFinal, // <--- Aquí se inyecta el identificador único
                 telefonoCelular: block.querySelector('.m-telefono').value || "N/A",
                 correoElectronico: block.querySelector('.m-correo').value || "N/A",
@@ -536,7 +534,7 @@
                 "Peso de bombona": viviendaGlobal.pesoBombona,
                 "Ubicación de centro Votación": miembro.centroVotacion,
                 "Fecha de ingreso": viviendaGlobal.fechaIngreso,
-                "Estado de ocupante": miembro.estadoOcupante,
+                "Estado de ocupante": viviendaGlobal.estadoOcupante,
                 "Comunidad": viviendaGlobal.comunidad,
                 "Torre": viviendaGlobal.torre,
                 "Numero de Casa / Apto": viviendaGlobal.numeroCasaApto,
