@@ -218,7 +218,7 @@
 
                     <div class="form-group">
                         <label>Estado del Ocupante</label>
-                        <select id="estadoOcupante" required>
+                        <select class="m-estadoOcupante" required>
                             <option value="1" selected>Activo</option>
                             <option value="2">Irregular</option>
                             <option value="0">Ausente</option>
@@ -487,7 +487,7 @@
                 nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
                 fechaNacimiento: formatearFecha(fechaNacRaw),
                 edad: edad,
-                estadoOcupante: tarjeta.querySelector('.miembro-estado-ocupante').value,
+                estadoOcupante: block.querySelector('.m-estadoOcupante').value, 
                 cedulaIdentidad: cedulaFinal, // <--- Aquí se inyecta el identificador único
                 telefonoCelular: block.querySelector('.m-telefono').value || "N/A",
                 correoElectronico: block.querySelector('.m-correo').value || "N/A",
