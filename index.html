@@ -468,21 +468,6 @@
                 tieneJefeMayorDeEdad = true;
             }
 
-            if (contadorJefes === 0) {
-                alert("Error de validación: Debe registrar un 'Jefe(a) de Hogar' en el núcleo familiar.");
-                return;
-            }
-
-            if (contadorJefes > 1) {
-                alert("Error de validación: Solo puede haber UN 'Jefe(a) de Hogar' por núcleo familiar. Los demás miembros deben tener otro parentesco.");
-                return;
-            }
-
-            if (!jefeEsMayorDeEdad) {
-                alert("Error de validación: El 'Jefe(a) de Hogar' debe ser mayor de edad (≥ 18 años).");
-                return;
-            }
-
             let cedulaFinal = block.querySelector('.m-cedula').value;
             if (edad < 18) {
                 cedulaFinal = generarIdMenor(viviendaGlobal.comunidad, viviendaGlobal.torre, viviendaGlobal.numeroCasaApto, fechaNacRaw);
@@ -560,6 +545,21 @@
                 "Beneficios": miembro.beneficios
             });
         });
+
+         if (contadorJefes === 0) {
+                alert("Error de validación: Debe registrar un 'Jefe(a) de Hogar' en el núcleo familiar.");
+                return;
+            }
+
+            if (contadorJefes > 1) {
+                alert("Error de validación: Solo puede haber UN 'Jefe(a) de Hogar' por núcleo familiar. Los demás miembros deben tener otro parentesco.");
+                return;
+            }
+
+            if (!jefeEsMayorDeEdad) {
+                alert("Error de validación: El 'Jefe(a) de Hogar' debe ser mayor de edad (≥ 18 años).");
+                return;
+            }
 
         exportarAExcelNativo(filasParaExcel, viviendaGlobal.numeroCasaApto);
 
