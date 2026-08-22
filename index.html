@@ -332,7 +332,7 @@
                         <select class="m-beneficio">
                             <option value="NINGUNA" selected>Ninguna</option>
                             <option value="JUBILACION">Jubilacion</option>
-                            <option value="PENSIONn">Pensión</option>
+                            <option value="PENSION">Pensión</option>
                             <option value="CARNET DE LA PATRIA">Carnet de la Patria</option>
                             <option value="OTRO">Otro</option>
                         </select>
@@ -393,7 +393,7 @@
         const telefonoInput = block.querySelector('.m-telefono');
         const correoInput = block.querySelector('.m-correo');
 
-        if (parentesco === "JEFE DE FAMILIA") {
+        if (parentesco === "JEFE/A DE FAMILIA") {
             telefonoInput.required = true;
             correoInput.required = true;
         } else {
@@ -444,7 +444,7 @@
                 if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) { edad--; }
             }
 
-            if (parentesco === "JEFE DE FAMILIA" && edad >= 18) {
+            if (parentesco === "JEFE/A DE FAMILIA" && edad >= 18) {
                 tieneJefeMayorDeEdad = true;
             }
 
