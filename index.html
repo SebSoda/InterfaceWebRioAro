@@ -156,11 +156,6 @@
         return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`;
     }
 
-    function generarIdMenor(comunidad, torre, casa, fechaNac) {
-        const f = fechaNac ? fechaNac.replace(/-/g, '') : '00';
-        return `MN-${comunidad}-${torre}-${casa}-${f}`;
-    }
-
     function agregarMiembro() {
         miembroContador++;
         const container = document.getElementById('miembrosContainer');
