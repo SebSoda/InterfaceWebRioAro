@@ -324,7 +324,7 @@
                     
                     <div class="form-group">
                         <label>Centro de Votación</label>
-                        <input type="text" class="m-votacion" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]+/[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]+/[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]+/[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]+$" title="Ingrese el formato estricto de Estado/Ciudad/Parroquia/Municipio separado por barras diagonales (/)" style="text-transform: uppercase;">
+                        <input type="text" class="m-votacion" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]+/[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]+/[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]+/[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s]+$" title="Ingrese el formato estricto de Estado/Ciudad/Parroquia/Municipio separado por barras diagonales (/)" style="text-transform: uppercase;">
                     </div>
                     
                     <div class="form-group">
@@ -354,6 +354,7 @@
         const fechaNacValue = block.querySelector('.m-fechaNac').value;
         const edadInput = block.querySelector('.m-edad');
         const cedulaInput = block.querySelector('.m-cedula');
+        const votacionInput = block.querySelector('.m-votacion');
 
         if (!fechaNacValue) return;
 
@@ -365,12 +366,24 @@
 
         edadInput.value = edad;
 
+        // Validación de Cédula según edad
         if (edad < 18) {
             cedulaInput.value = "MENOR S/C";
             cedulaInput.disabled = true;
         } else {
             if (cedulaInput.value === "MENOR S/C") cedulaInput.value = "";
             cedulaInput.disabled = false;
+        }
+
+        // Regla para Centro de Votación (< 15 años)
+        if (edad < 15) {
+            votacionInput.value = "NA";
+            votacionInput.disabled = true;
+            votacionInput.required = false;
+        } else {
+            if (votacionInput.value === "NA") votacionInput.value = "";
+            votacionInput.disabled = false;
+            votacionInput.required = true;
         }
     }
 
@@ -429,7 +442,8 @@
         datosEnvio.vivienda = viviendaGlobal;
 
         const bloques = document.querySelectorAll('.miembro-block');
-        let tieneJefeMayorDeEdad = false;
+        let contadorJefes = 0;
+        let jefeEsMayorDeEdad = false;
 
         bloques.forEach(block => {
             const parentesco = block.querySelector('.m-parentesco').value;
@@ -445,7 +459,23 @@
             }
 
             if (parentesco === "JEFE/A DE FAMILIA" && edad >= 18) {
+                contadorJefes++;
                 tieneJefeMayorDeEdad = true;
+            }
+
+            if (contadorJefes === 0) {
+                alert("Error de validación: Debe registrar un 'Jefe(a) de Hogar' en el núcleo familiar.");
+                return;
+            }
+
+            if (contadorJefes > 1) {
+                alert("Error de validación: Solo puede haber UN 'Jefe(a) de Hogar' por núcleo familiar. Los demás miembros deben tener otro parentesco.");
+                return;
+            }
+
+            if (!jefeEsMayorDeEdad) {
+                alert("Error de validación: El 'Jefe(a) de Hogar' debe ser mayor de edad (≥ 18 años).");
+                return;
             }
 
             let cedulaFinal = block.querySelector('.m-cedula').value;
@@ -513,11 +543,6 @@
                 "Beneficios": miembro.beneficios
             });
         });
-
-        if (!tieneJefeMayorDeEdad) {
-            alert("Error de validación: El núcleo familiar debe poseer un 'Jefe(a) de Hogar' mayor de edad (≥ 18 años).");
-            return;
-        }
 
         exportarAExcelNativo(filasParaExcel, viviendaGlobal.numeroCasaApto);
 
