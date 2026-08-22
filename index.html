@@ -403,6 +403,19 @@
         }
     }
 
+    function generarIdMenor(comunidad, torre, casa, fechaNacStr) {
+        if (!fechaNacStr) return "MENOR_S_C";
+        const partes = fechaNacStr.split('-');
+        if (partes.length === 3) {
+            const anio = partes[0];
+            const mes = partes[1];
+            const dia = partes[2];
+            const casaLimpia = casa.replace(/\s+/g, '');
+            return `${comunidad}${torre}${casaLimpia}${dia}${mes}${anio}`;
+        }
+        return `${comunidad}${torre}${casa}`;
+    }
+
     function actualizarCamposPorParentesco(idNum) {
         const block = document.getElementById(`miembro_${idNum}`);
         const parentesco = block.querySelector('.m-parentesco').value;
