@@ -156,6 +156,11 @@
         return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`;
     }
 
+    function generarIdMenor(comunidad, torre, casa, fechaNac) {
+        const f = fechaNac ? fechaNac.replace(/-/g, '') : '00';
+        return `MN-${comunidad}-${torre}-${casa}-${f}`;
+    }
+
     function agregarMiembro() {
         miembroContador++;
         const container = document.getElementById('miembrosContainer');
@@ -180,7 +185,7 @@
 
                     <div class="form-group">
                         <label>Cédula de Identidad</label>
-                        <input type="text" class="m-cedula" required pattern="^[0-9]{6,8}$|^MENOR$|^NA$" placeholder="Ej: 25123456" title="Ejemplos válidos: 12345678. Para menores aparecerá automáticamente 'MENOR S/C'.">
+                        <input type="text" class="m-cedula" required pattern="^[0-9]{6,8}$|^MENOR S/C$|^MENOR$|^NA$" placeholder="Ej: 25123456" title="Ejemplos válidos: 12345678. Para menores aparecerá automáticamente 'MENOR S/C'.">
                     </div>
                     
                     <div class="form-group">
@@ -328,7 +333,7 @@
                             <input type="text" class="m-v-estado" placeholder="Estado (Ej: Bolívar)" style="text-transform: uppercase;">
                             <input type="text" class="m-v-ciudad" placeholder="Ciudad (Ej: Puerto Ordaz)" style="text-transform: uppercase;">
                             <input type="text" class="m-v-parroquia" placeholder="Parroquia (Ej: Unare)" style="text-transform: uppercase;">
-                            <input type="text" class="m-v-Municipio" placeholder="Municipio (Ej: No se we)" style="text-transform: uppercase;">
+                            <input type="text" class="m-v-Municipio" placeholder="Municipio (Ej: Caroní)" style="text-transform: uppercase;">
                         </div>
                     </div>
                     
@@ -353,57 +358,55 @@
     }
 
     function calcularEdadYValidarId(idNum) {
-    const block = document.getElementById(`miembro_${idNum}`);
-    if (!block) return;
-    
-    const fechaNacValue = block.querySelector('.m-fechaNac').value;
-    const edadInput = block.querySelector('.m-edad');
-    const cedulaInput = block.querySelector('.m-cedula');
-    
-    const estInput = block.querySelector('.m-v-estado');
-    const ciuInput = block.querySelector('.m-v-ciudad');
-    const parInput = block.querySelector('.m-v-parroquia');
-    const cenInput = block.querySelector('.m-v-centro');
+        const block = document.getElementById(`miembro_${idNum}`);
+        if (!block) return;
+        
+        const fechaNacValue = block.querySelector('.m-fechaNac').value;
+        const edadInput = block.querySelector('.m-edad');
+        const cedulaInput = block.querySelector('.m-cedula');
+        
+        const estInput = block.querySelector('.m-v-estado');
+        const ciuInput = block.querySelector('.m-v-ciudad');
+        const parInput = block.querySelector('.m-v-parroquia');
+        const munInput = block.querySelector('.m-v-Municipio');
 
-    if (!fechaNacValue) return;
+        if (!fechaNacValue) return;
 
-    const nacimiento = new Date(fechaNacValue + 'T00:00:00');
-    const hoy = new Date();
-    let edad = hoy.getFullYear() - nacimiento.getFullYear();
-    const mes = hoy.getMonth() - nacimiento.getMonth();
-    if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) { edad--; }
+        const nacimiento = new Date(fechaNacValue + 'T00:00:00');
+        const hoy = new Date();
+        let edad = hoy.getFullYear() - nacimiento.getFullYear();
+        const mes = hoy.getMonth() - nacimiento.getMonth();
+        if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) { edad--; }
 
-    edadInput.value = edad;
+        edadInput.value = edad;
 
-    // Validación de Cédula
-    if (edad < 18) {
-        cedulaInput.value = "MENOR S/C";
-        cedulaInput.disabled = true;
-    } else {
-        if (cedulaInput.value === "MENOR S/C") cedulaInput.value = "";
-        cedulaInput.disabled = false;
+        if (edad < 18) {
+            cedulaInput.value = "MENOR S/C";
+            cedulaInput.disabled = true;
+        } else {
+            if (cedulaInput.value === "MENOR S/C") cedulaInput.value = "";
+            cedulaInput.disabled = false;
+        }
+
+        const camposVotacion = [estInput, ciuInput, parInput, munInput];
+        if (edad < 15) {
+            camposVotacion.forEach(input => {
+                if (input) {
+                    input.value = "NA";
+                    input.disabled = true;
+                    input.required = false;
+                }
+            });
+        } else {
+            camposVotacion.forEach(input => {
+                if (input) {
+                    if (input.value === "NA") input.value = "";
+                    input.disabled = false;
+                    input.required = true;
+                }
+            });
+        }
     }
-
-    // Regla para Centro de Votación (< 15 años)
-    const camposVotacion = [estInput, ciuInput, parInput, cenInput];
-    if (edad < 15) {
-        camposVotacion.forEach(input => {
-            if (input) {
-                input.value = "NA";
-                input.disabled = true;
-                input.required = false;
-            }
-        });
-    } else {
-        camposVotacion.forEach(input => {
-            if (input) {
-                if (input.value === "NA") input.value = "";
-                input.disabled = false;
-                input.required = true;
-            }
-        });
-    }
-}
 
     function actualizarCamposPorParentesco(idNum) {
         const block = document.getElementById(`miembro_${idNum}`);
@@ -418,10 +421,6 @@
             telefonoInput.required = false;
             correoInput.required = false;
         }
-    }
-
-    function propagarDatosJefeAMenores() {
-        // Función deshabilitada para permitir la edición libre de teléfono y correo en menores
     }
 
     document.getElementById('censoForm').addEventListener('submit', function(e) {
@@ -463,9 +462,11 @@
                 if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) { edad--; }
             }
 
-            if (parentesco === "JEFE/A DE FAMILIA" && edad >= 18) {
+            if (parentesco === "JEFE/A DE FAMILIA") {
                 contadorJefes++;
-                tieneJefeMayorDeEdad = true;
+                if (edad >= 18) {
+                    jefeEsMayorDeEdad = true;
+                }
             }
 
             let cedulaFinal = block.querySelector('.m-cedula').value;
@@ -473,16 +474,14 @@
                 cedulaFinal = generarIdMenor(viviendaGlobal.comunidad, viviendaGlobal.torre, viviendaGlobal.numeroCasaApto, fechaNacRaw);
             }
 
-            // Obtener los valores de las 4 casillas
             const est = block.querySelector('.m-v-estado').value.trim().toUpperCase() || "NA";
             const ciu = block.querySelector('.m-v-ciudad').value.trim().toUpperCase() || "NA";
             const par = block.querySelector('.m-v-parroquia').value.trim().toUpperCase() || "NA";
-            const cen = block.querySelector('.m-v-centro').value.trim().toUpperCase() || "NA";
+            const mun = block.querySelector('.m-v-Municipio').value.trim().toUpperCase() || "NA";
 
-            // Unir los datos con el formato Estado/Ciudad/Parroquia/Centro
             let centroVotacionFinal = "NA";
             if (edad >= 15) {
-                centroVotacionFinal = `${est}/${ciu}/${par}/${cen}`;
+                centroVotacionFinal = `${est}/${ciu}/${par}/${mun}`;
             }
 
             const miembro = {
@@ -546,20 +545,20 @@
             });
         });
 
-         if (contadorJefes === 0) {
-                alert("Error de validación: Debe registrar un 'Jefe(a) de Hogar' en el núcleo familiar.");
-                return;
-            }
+        if (contadorJefes === 0) {
+            alert("Error de validación: Debe registrar un 'Jefe(a) de Hogar' en el núcleo familiar.");
+            return;
+        }
 
-            if (contadorJefes > 1) {
-                alert("Error de validación: Solo puede haber UN 'Jefe(a) de Hogar' por núcleo familiar. Los demás miembros deben tener otro parentesco.");
-                return;
-            }
+        if (contadorJefes > 1) {
+            alert("Error de validación: Solo puede haber UN 'Jefe(a) de Hogar' por núcleo familiar. Los demás miembros deben tener otro parentesco.");
+            return;
+        }
 
-            if (!jefeEsMayorDeEdad) {
-                alert("Error de validación: El 'Jefe(a) de Hogar' debe ser mayor de edad (≥ 18 años).");
-                return;
-            }
+        if (!jefeEsMayorDeEdad) {
+            alert("Error de validación: El 'Jefe(a) de Hogar' debe ser mayor de edad (≥ 18 años).");
+            return;
+        }
 
         exportarAExcelNativo(filasParaExcel, viviendaGlobal.numeroCasaApto);
 
