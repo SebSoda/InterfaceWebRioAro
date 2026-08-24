@@ -180,11 +180,17 @@
 
                     <div class="form-group">
                         <label>Cédula de Identidad</label>
-                        <input type="text" class="m-cedula" required 
-                            pattern="^[0-9]{6,8}$|^MENOR S/C$" 
-                            placeholder="Ej: 25123456" 
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                            title="Ingrese entre 6 y 8 dígitos numéricos sin letras ni puntos. Para menores se asignará 'MENOR S/C' automáticamente.">
+                        <div style="display: flex; gap: 6px;">
+                            <select class="m-nacionalidad" style="width: 65px;" required>
+                                <option value="V" selected>V</option>
+                                <option value="E">E</option>
+                            </select>
+                            <input type="text" class="m-cedula" style="flex: 1;" required 
+                                pattern="^[0-9]{6,8}$|^MENOR S/C$" 
+                                placeholder="Ej: 25123456" 
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                title="Ingrese entre 6 y 8 dígitos numéricos sin letras ni puntos. Para menores se asignará 'MENOR S/C' automáticamente.">
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -375,6 +381,7 @@
         const fechaNacValue = block.querySelector('.m-fechaNac').value;
         const edadInput = block.querySelector('.m-edad');
         const cedulaInput = block.querySelector('.m-cedula');
+        const nacSelect = block.querySelector('.m-nacionalidad'); // Referencia al select V/E
         
         const estInput = block.querySelector('.m-v-estado');
         const ciuInput = block.querySelector('.m-v-ciudad');
@@ -394,9 +401,11 @@
         if (edad < 18) {
             cedulaInput.value = "MENOR S/C";
             cedulaInput.disabled = true;
+            if (nacSelect) nacSelect.disabled = true;
         } else {
             if (cedulaInput.value === "MENOR S/C") cedulaInput.value = "";
             cedulaInput.disabled = false;
+            if (nacSelect) nacSelect.disabled = false;
         }
 
         const camposVotacion = [estInput, ciuInput, parInput, munInput];
@@ -493,9 +502,15 @@
                 }
             }
 
-            let cedulaFinal = block.querySelector('.m-cedula').value;
+            const nacionalidad = block.querySelector('.m-nacionalidad').value;
+            let cedulaIngresada = block.querySelector('.m-cedula').value.trim();
+
+            let cedulaFinal = "";
             if (edad < 18) {
                 cedulaFinal = generarIdMenor(viviendaGlobal.comunidad, viviendaGlobal.torre, viviendaGlobal.numeroCasaApto, fechaNacRaw);
+            } else {
+                // Une la letra (V- o E-) con el número ingresado
+                cedulaFinal = `${nacionalidad}${cedulaIngresada}`;
             }
 
             const est = block.querySelector('.m-v-estado').value.trim().toUpperCase() || "NA";
