@@ -180,7 +180,11 @@
 
                     <div class="form-group">
                         <label>Cédula de Identidad</label>
-                        <input type="text" class="m-cedula" required pattern="^[0-9]{6,8}$|^MENOR S/C$" placeholder="Ej: 25123456" title="Ingrese entre 6 y 8 dígitos numéricos sin letras ni puntos. Para menores se asignará 'MENOR S/C' automáticamente.">
+                        <input type="text" class="m-cedula" required 
+                            pattern="^[0-9]{6,8}$|^MENOR S/C$" 
+                            placeholder="Ej: 25123456" 
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                            title="Ingrese entre 6 y 8 dígitos numéricos sin letras ni puntos. Para menores se asignará 'MENOR S/C' automáticamente.">
                     </div>
                     
                     <div class="form-group">
@@ -368,7 +372,28 @@
         const block = document.getElementById(`miembro_${idNum}`);
         if (!block) return;
         
-        const fechaNacValue = block.querySelector('.m-fechaNac').value;
+        const fechaNacInput = block.querySelector('.m-fechaNac');
+        let fechaNacValue = fechaNacInput.value;
+        if (!fechaNacValue) return;
+
+        // --- AUTO-CORRECCIÓN DE FECHA EN TIEMPO REAL ---
+        const hoyStr = new Date().toISOString().split('T')[0];
+        const fechaMinima = new Date();
+        fechaMinima.setFullYear(fechaMinima.getFullYear() - 120);
+        const minFechaStr = fechaMinima.toISOString().split('T')[0];
+
+        // Si la fecha es futura (ej: año 3000), la ajusta automáticamente al día de hoy
+        if (fechaNacValue > hoyStr) {
+            fechaNacInput.value = hoyStr;
+            fechaNacValue = hoyStr;
+        } 
+        // Si la fecha es anterior al límite (ej: año 1000), la ajusta al límite mínimo de 120 años
+        else if (fechaNacValue < minFechaStr) {
+            fechaNacInput.value = minFechaStr;
+            fechaNacValue = minFechaStr;
+        }
+        // -----------------------------------------------
+
         const edadInput = block.querySelector('.m-edad');
         const cedulaInput = block.querySelector('.m-cedula');
         
@@ -376,8 +401,6 @@
         const ciuInput = block.querySelector('.m-v-ciudad');
         const parInput = block.querySelector('.m-v-parroquia');
         const munInput = block.querySelector('.m-v-Municipio');
-
-        if (!fechaNacValue) return;
 
         const nacimiento = new Date(fechaNacValue + 'T00:00:00');
         const hoy = new Date();
@@ -608,11 +631,18 @@
     window.onload = function() { 
         agregarMiembro(); 
         
-        // --- LÍMITE PARA FECHA DE INGRESO A LA COMUNIDAD ---
-        const hoy = new Date().toISOString().split('T')[0];
         const fechaIngreso = document.getElementById('fechaIngreso');
-        fechaIngreso.setAttribute('max', hoy);
+        const hoyStr = new Date().toISOString().split('T')[0];
+        fechaIngreso.setAttribute('max', hoyStr);
         fechaIngreso.setAttribute('min', '1900-01-01');
+
+        fechaIngreso.addEventListener('change', function() {
+            if (this.value > hoyStr) {
+                this.value = hoyStr;
+            } else if (this.value < '1900-01-01' && this.value !== '') {
+                this.value = '1900-01-01';
+            }
+        });
     };
 </script>
 </body>
