@@ -175,7 +175,9 @@
                     
                     <div class="form-group">
                         <label>Fecha de Nacimiento</label>
-                        <input type="date" class="m-fechaNac" required onchange="calcularEdadYValidarId(${miembroContador})">
+                        <input type="date" class="m-fechaNac" required 
+                            onchange="calcularEdadYValidarId(${miembroContador})" 
+                            oninput="calcularEdadYValidarId(${miembroContador})">
                     </div>
 
                     <div class="form-group">
@@ -373,27 +375,7 @@
         if (!block) return;
         
         const fechaNacInput = block.querySelector('.m-fechaNac');
-        let fechaNacValue = fechaNacInput.value;
-        if (!fechaNacValue) return;
-
-        // --- AUTO-CORRECCIÓN DE FECHA EN TIEMPO REAL ---
-        const hoyStr = new Date().toISOString().split('T')[0];
-        const fechaMinima = new Date();
-        fechaMinima.setFullYear(fechaMinima.getFullYear() - 120);
-        const minFechaStr = fechaMinima.toISOString().split('T')[0];
-
-        // Si la fecha es futura (ej: año 3000), la ajusta automáticamente al día de hoy
-        if (fechaNacValue > hoyStr) {
-            fechaNacInput.value = hoyStr;
-            fechaNacValue = hoyStr;
-        } 
-        // Si la fecha es anterior al límite (ej: año 1000), la ajusta al límite mínimo de 120 años
-        else if (fechaNacValue < minFechaStr) {
-            fechaNacInput.value = minFechaStr;
-            fechaNacValue = minFechaStr;
-        }
-        // -----------------------------------------------
-
+        const fechaNacValue = fechaNacInput.value;
         const edadInput = block.querySelector('.m-edad');
         const cedulaInput = block.querySelector('.m-cedula');
         
@@ -401,6 +383,31 @@
         const ciuInput = block.querySelector('.m-v-ciudad');
         const parInput = block.querySelector('.m-v-parroquia');
         const munInput = block.querySelector('.m-v-Municipio');
+
+        if (!fechaNacValue) {
+            fechaNacInput.setCustomValidity("");
+            return;
+        }
+
+        // --- VALIDACIÓN DE FECHA DE NACIMIENTO EN TIEMPO REAL ---
+        const hoyStr = new Date().toISOString().split('T')[0];
+        const fechaMinima = new Date();
+        fechaMinima.setFullYear(fechaMinima.getFullYear() - 120);
+        const minFechaStr = fechaMinima.toISOString().split('T')[0];
+
+        if (fechaNacValue > hoyStr) {
+            fechaNacInput.setCustomValidity("La fecha de nacimiento no puede ser una fecha futura.");
+            fechaNacInput.reportValidity();
+            return;
+        } else if (fechaNacValue < minFechaStr) {
+            fechaNacInput.setCustomValidity("La fecha ingresada no es válida (supera el límite de 120 años).");
+            fechaNacInput.reportValidity();
+            return;
+        } else {
+            // Fecha correcta: se limpia cualquier mensaje de error anterior
+            fechaNacInput.setCustomValidity("");
+        }
+        // -----------------------------------------------------
 
         const nacimiento = new Date(fechaNacValue + 'T00:00:00');
         const hoy = new Date();
@@ -631,18 +638,31 @@
     window.onload = function() { 
         agregarMiembro(); 
         
+        // --- LÍMITE Y AVISO INSTANTÁNEO PARA FECHA DE INGRESO ---
+        const hoy = new Date().toISOString().split('T')[0];
         const fechaIngreso = document.getElementById('fechaIngreso');
-        const hoyStr = new Date().toISOString().split('T')[0];
-        fechaIngreso.setAttribute('max', hoyStr);
+        fechaIngreso.setAttribute('max', hoy);
         fechaIngreso.setAttribute('min', '1900-01-01');
 
-        fechaIngreso.addEventListener('change', function() {
-            if (this.value > hoyStr) {
-                this.value = hoyStr;
-            } else if (this.value < '1900-01-01' && this.value !== '') {
-                this.value = '1900-01-01';
+        function validarFechaIngreso() {
+            const val = fechaIngreso.value;
+            if (!val) {
+                fechaIngreso.setCustomValidity("");
+                return;
             }
-        });
+            if (val > hoy) {
+                fechaIngreso.setCustomValidity("La fecha de ingreso a la comunidad no puede ser una fecha futura.");
+                fechaIngreso.reportValidity();
+            } else if (val < '1900-01-01') {
+                fechaIngreso.setCustomValidity("Ingrese una fecha de ingreso válida (posterior a 1900).");
+                fechaIngreso.reportValidity();
+            } else {
+                fechaIngreso.setCustomValidity("");
+            }
+        }
+
+        fechaIngreso.addEventListener('change', validarFechaIngreso);
+        fechaIngreso.addEventListener('input', validarFechaIngreso);
     };
 </script>
 </body>
