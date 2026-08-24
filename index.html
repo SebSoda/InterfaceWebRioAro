@@ -180,7 +180,7 @@
 
                     <div class="form-group">
                         <label>Cédula de Identidad</label>
-                        <input type="text" class="m-cedula" required pattern="^[0-9]{6,8}$|^MENOR S/C$|^MENOR$|^NA$" placeholder="Ej: 25123456" title="Ejemplos válidos: 12345678. Para menores aparecerá automáticamente 'MENOR S/C'.">
+                        <input type="text" class="m-cedula" required pattern="^[0-9]{6,8}$|^MENOR S/C$" placeholder="Ej: 25123456" title="Ingrese entre 6 y 8 dígitos numéricos sin letras ni puntos. Para menores se asignará 'MENOR S/C' automáticamente.">
                     </div>
                     
                     <div class="form-group">
@@ -345,6 +345,18 @@
                 </div>
             </div>`;
         container.insertAdjacentHTML('beforeend', miembroHtml);
+
+        // --- LÍMITE DE FECHAS DE NACIMIENTO ---
+        const hoy = new Date().toISOString().split('T')[0];
+        const fechaMinima = new Date();
+        fechaMinima.setFullYear(fechaMinima.getFullYear() - 120); // Máximo 120 años de edad
+        const minFechaStr = fechaMinima.toISOString().split('T')[0];
+
+        const blockActual = document.getElementById(`miembro_${miembroContador}`);
+        const fechaNacInput = blockActual.querySelector('.m-fechaNac');
+        fechaNacInput.setAttribute('max', hoy);
+        fechaNacInput.setAttribute('min', minFechaStr);
+
         actualizarCamposPorParentesco(miembroContador);
     }
 
@@ -593,7 +605,15 @@
         XLSX.writeFile(wb, `Censo_RioAro_Casa_${numeroCasa.replace(/\s+/g, '_')}.xlsx`);
     }
 
-    window.onload = function() { agregarMiembro(); };
+    window.onload = function() { 
+        agregarMiembro(); 
+        
+        // --- LÍMITE PARA FECHA DE INGRESO A LA COMUNIDAD ---
+        const hoy = new Date().toISOString().split('T')[0];
+        const fechaIngreso = document.getElementById('fechaIngreso');
+        fechaIngreso.setAttribute('max', hoy);
+        fechaIngreso.setAttribute('min', '1900-01-01');
+    };
 </script>
 </body>
 </html>
