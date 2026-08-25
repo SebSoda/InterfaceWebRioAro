@@ -99,9 +99,9 @@
                 <div class="form-group">
                     <label>Estado del Ocupante</label>
                     <select id="estadoOcupante" required>
-                        <option value="1" selected>Activo</option>
-                        <option value="2">Irregular</option>
-                        <option value="0">Ausente</option>
+                        <option value="ACTIVO" selected>Activo</option>
+                        <option value="IRREGULAR">Irregular</option>
+                        <option value="AUSENTE">Ausente</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -510,7 +510,7 @@
                 cedulaFinal = generarIdMenor(viviendaGlobal.comunidad, viviendaGlobal.torre, viviendaGlobal.numeroCasaApto, fechaNacRaw);
             } else {
                 // Une la letra (V- o E-) con el número ingresado
-                cedulaFinal = `${nacionalidad}${cedulaIngresada}`;
+                cedulaFinal = `${nacionalidad}-${cedulaIngresada}`;
             }
 
             const est = block.querySelector('.m-v-estado').value.trim().toUpperCase() || "NA";
