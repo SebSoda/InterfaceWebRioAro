@@ -510,7 +510,7 @@
                 cedulaFinal = generarIdMenor(viviendaGlobal.comunidad, viviendaGlobal.torre, viviendaGlobal.numeroCasaApto, fechaNacRaw);
             } else {
                 // Une la letra (V- o E-) con el número ingresado
-                cedulaFinal = `${nacionalidad}-${cedulaIngresada}`;
+                cedulaFinal = `${nacionalidad}${cedulaIngresada}`;
             }
 
             const est = block.querySelector('.m-v-estado').value.trim().toUpperCase() || "NA";
