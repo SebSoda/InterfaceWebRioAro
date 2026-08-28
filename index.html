@@ -42,6 +42,17 @@
 
     <form id="censoForm">
         <div class="card">
+            <div class="card" style="border-left: 4px solid #DC3545; background-color: #FFF8F8;">
+                <div class="card-title" style="color: #DC3545;">🔑 Autenticación del Censista</div>
+                <div class="grid-3">
+                    <div class="form-group" style="grid-column: span 3;">
+                        <label>Contraseña de Autorización (Enviada por WhatsApp)</label>
+                        <input type="password" id="tokenAcceso" required placeholder="Ingrese la clave secreta proporcionada" style="border-color: #DC3545;">
+                        <small style="color: #666; margin-top: 5px;">Sin esta contraseña, el sistema no permitirá guardar los datos en la nube.</small>
+                    </div>
+                </div>
+            </div>
+
             <div class="card-title">1. Ubicación y Datos de la Vivienda</div>
             <div class="grid-3">
                 <div class="form-group">
@@ -460,7 +471,9 @@
         e.preventDefault();
         
         const timestampGenerado = obtenerMarcaTemporal();
+        const tokenIngresado = document.getElementById('tokenAcceso').value.trim(); // 🔑 Captura la clave
         const datosEnvio = { 
+            token: tokenIngresado,
             marcaTemporal: timestampGenerado, 
             vivienda: {}, 
             miembros: [] 
