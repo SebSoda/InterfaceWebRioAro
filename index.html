@@ -454,7 +454,8 @@
         const edadInput = block.querySelector('.m-edad');
         const cedulaInput = block.querySelector('.m-cedula');
         const nacSelect = block.querySelector('.m-nacionalidad'); // Referencia al select V/E
-        
+        const lactanteSelect = block.querySelector('.m-lactante');
+
         const estInput = block.querySelector('.m-v-estado');
         const ciuInput = block.querySelector('.m-v-ciudad');
         const parInput = block.querySelector('.m-v-parroquia');
@@ -470,7 +471,13 @@
 
         edadInput.value = edad;
 
-        if (edad < 18) {
+        if (edad < 1) {
+            lactanteSelect.value = "SI";
+        } else {
+            lactanteSelect.value = "NO";
+        }
+
+        if (edad < 9) {
             cedulaInput.value = "MENOR S/C";
             cedulaInput.disabled = true;
             if (nacSelect) nacSelect.disabled = true;
@@ -578,7 +585,7 @@
             let cedulaIngresada = block.querySelector('.m-cedula').value.trim();
 
             let cedulaFinal = "";
-            if (edad < 18) {
+            if (edad < 9) {
                 cedulaFinal = generarIdMenor(viviendaGlobal.comunidad, viviendaGlobal.torre, viviendaGlobal.numeroCasaApto, fechaNacRaw);
             } else {
                 // Une la letra (V- o E-) con el número ingresado
