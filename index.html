@@ -253,8 +253,8 @@
                     
                     <div class="form-group">
                         <label>Género Biológico</label>
-                        <select class="m-genero" required>
-                            <option value="M">Masculino</option>
+                        <select class="m-genero" required onchange="actualizarEmbarazo(${miembroContador})">
+                            <option value="M" selected>Masculino</option>
                             <option value="F">Femenino</option>
                         </select>
                     </div>
@@ -290,6 +290,7 @@
                     <div class="form-group">
                         <label>¿Está Embarazada?</label>
                         <select class="m-embarazo">
+                            <option value="NA" selected>NA</option>
                             <option value="NO" selected>No</option>
                             <option value="SI">Sí</option>
                         </select>
@@ -416,6 +417,29 @@
         fechaNacInput.setAttribute('min', minFechaStr);
 
         actualizarCamposPorParentesco(miembroContador);
+        // Dentro de la función agregarMiembro(), al final:
+        actualizarCamposPorParentesco(miembroContador);
+        actualizarEmbarazo(miembroContador); // <--- Agregar esta línea
+    }
+
+    function actualizarEmbarazo(idNum) {
+        const block = document.getElementById(`miembro_${idNum}`);
+        if (!block) return;
+
+        const genero = block.querySelector('.m-genero').value;
+        const embarazoSelect = block.querySelector('.m-embarazo');
+
+        if (genero === 'M') {
+            // Si es Hombre: se fija en N/A y se deshabilita
+            embarazoSelect.value = 'NA';
+            embarazoSelect.disabled = true;
+        } else {
+            // Si es Mujer: se habilita y el valor por defecto pasa a "NO"
+            embarazoSelect.disabled = false;
+            if (embarazoSelect.value === 'NA') {
+                embarazoSelect.value = 'NO';
+            }
+        }
     }
 
     function removerMiembro(id) {
