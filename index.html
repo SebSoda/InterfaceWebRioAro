@@ -94,17 +94,17 @@
             <div class="grid-3">
                 <div class="form-group">
                     <label>Comunidad</label>
-                    <select id="comunidad" required>
+                    <select id="comunidad" required onchange="actualizarTorres()">
                         <option value="MZA" selected>Manzanas</option>
+                        <option value="ENSE">Ensenada</option>
+                        <option value="SIPAO">Sipao</option>
+                        <option value="YOCO">Yocoima</option>
+                        <option value="RUBI">Rubieras</option>
                         <option value="19A">Edificio 19A</option>
                         <option value="19B">Edificio 19B</option>
                         <option value="19C">Edificio 19C</option>
                         <option value="20A">Edificio 20A</option>
                         <option value="20B">Edificio 20B</option>
-                        <option value="ENSE">Ensenada</option>
-                        <option value="SIPAO">Sipao</option>
-                        <option value="YOCO">Yocoima</option>
-                        <option value="RUBI">Rubieras</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -535,6 +535,81 @@
         }
     }
 
+    // Mapa de opciones para el selector de Torre / Bloque según la comunidad seleccionada
+const torresPorComunidad = {
+    "MZA": [
+        { value: "15", text: "Manzana 15" },
+        { value: "16", text: "Manzana 16" },
+        { value: "17", text: "Manzana 17" },
+        { value: "18", text: "Manzana 18" },
+        { value: "25", text: "Manzana 25" }
+    ],
+    "19A": [
+        { value: "1", text: "Torre 1" }, { value: "2", text: "Torre 2" },
+        { value: "3", text: "Torre 3" }, { value: "4", text: "Torre 4" },
+        { value: "5", text: "Torre 5" }, { value: "6", text: "Torre 6" },
+        { value: "7", text: "Torre 7" }, { value: "8", text: "Torre 8" }
+    ],
+    "19B": [
+        { value: "1", text: "Torre 1" }, { value: "2", text: "Torre 2" },
+        { value: "3", text: "Torre 3" }, { value: "4", text: "Torre 4" },
+        { value: "5", text: "Torre 5" }, { value: "6", text: "Torre 6" },
+        { value: "7", text: "Torre 7" }, { value: "8", text: "Torre 8" }
+    ],
+    "19C": [
+        { value: "1", text: "Torre 1" }, { value: "2", text: "Torre 2" },
+        { value: "3", text: "Torre 3" }, { value: "4", text: "Torre 4" },
+        { value: "5", text: "Torre 5" }, { value: "6", text: "Torre 6" },
+        { value: "7", text: "Torre 7" }, { value: "8", text: "Torre 8" }
+    ],
+    "20A": [
+        { value: "1", text: "Torre 1" }, { value: "2", text: "Torre 2" },
+        { value: "3", text: "Torre 3" }, { value: "4", text: "Torre 4" },
+        { value: "5", text: "Torre 5" }, { value: "6", text: "Torre 6" },
+        { value: "7", text: "Torre 7" }, { value: "8", text: "Torre 8" }
+    ],
+    "20B": [
+        { value: "1", text: "Torre 1" }, { value: "2", text: "Torre 2" },
+        { value: "3", text: "Torre 3" }, { value: "4", text: "Torre 4" },
+        { value: "5", text: "Torre 5" }, { value: "6", text: "Torre 6" },
+        { value: "7", text: "Torre 7" }, { value: "8", text: "Torre 8" }
+    ],
+    "RUBI": [
+        { value: "1", text: "Rubiera 1" },
+        { value: "2", text: "Rubiera 2" },
+        { value: "3", text: "Rubiera 3" }
+    ],
+    "ENSE": [
+        { value: "UNICA", text: "Conjunto Ensenada" }
+    ],
+    "SIPAO": [
+        { value: "UNICA", text: "Conjunto Sipao" }
+    ],
+    "YOCO": [
+        { value: "UNICA", text: "Conjunto Yocoima" }
+    ]
+};
+
+function actualizarTorres() {
+    const comunidadSel = document.getElementById('comunidad').value;
+    const torreSelect = document.getElementById('torre');
+
+    // Limpia las opciones actuales
+    torreSelect.innerHTML = '';
+
+    // Obtiene las opciones correspondientes a la comunidad seleccionada
+    const opciones = torresPorComunidad[comunidadSel] || [];
+
+    // Agrega las nuevas opciones al select
+    opciones.forEach((op, index) => {
+        const optionEl = document.createElement('option');
+        optionEl.value = op.value;
+        optionEl.textContent = op.text;
+        if (index === 0) optionEl.selected = true;
+        torreSelect.appendChild(optionEl);
+    });
+}
+
     document.getElementById('censoForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -705,6 +780,7 @@
 
     window.onload = function() { 
         agregarMiembro(); 
+        actualizarTorres();
         
         // --- LÍMITE PARA FECHA DE INGRESO A LA COMUNIDAD ---
         const hoy = new Date().toISOString().split('T')[0];
