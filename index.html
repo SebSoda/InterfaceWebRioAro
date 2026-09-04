@@ -296,6 +296,14 @@
                             <option value="SI">Sí</option>
                         </select>
                     </div>
+
+                    <div class="form-group">
+                        <label>¿Lactante (0-11 meses)?</label>
+                        <select class="m-lactante">
+                            <option value="NO" selected>No</option>
+                            <option value="SI">Sí</option>
+                        </select>
+                    </div>
                     
                     <div class="form-group">
                         <label>Profesión</label>
@@ -444,6 +452,8 @@
         const edadInput = block.querySelector('.m-edad');
         const cedulaInput = block.querySelector('.m-cedula');
         const nacSelect = block.querySelector('.m-nacionalidad');
+        const lactanteSelect = block.querySelector('.m-lactante');
+
 
         const estInput = block.querySelector('.m-v-estado');
         const ciuInput = block.querySelector('.m-v-ciudad');
@@ -460,6 +470,13 @@
         if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) { edad--; }
 
         edadInput.value = edad;
+
+        if (edad < 1) {
+            lactanteSelect.value = "SI";
+        } else {
+            lactanteSelect.value = "NO";
+        }
+
 
         if (edad < 9) {
             cedulaInput.value = "MENOR S/C";
@@ -667,6 +684,7 @@
                 parentesco: parentesco,
                 estadoCivil: block.querySelector('.m-civil').value,
                 embarazadas: block.querySelector('.m-embarazo').value,
+                 lactantes: block.querySelector('.m-lactante').value,
                 profesion: block.querySelector('.m-profesion').value.toUpperCase(),
                 ocupacion: block.querySelector('.m-ocupacion').value.toUpperCase(),
                 Empresa: block.querySelector('.m-empresa').value.toUpperCase(),
@@ -692,6 +710,7 @@
                 "Estado civil": miembro.estadoCivil,
                 "Parentesco": miembro.parentesco,
                 "¿Embarazada?": miembro.embarazadas,
+                "¿Lactante 0 - 11 meses?": miembro.lactantes,
                 "Numero de teléfono celular": miembro.telefonoCelular,
                 "Correo electrónico": miembro.correoElectronico,
                 "Profesión": miembro.profesion,
