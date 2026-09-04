@@ -172,9 +172,9 @@
         <div class="card">
             <div class="flex-between">
                 <div class="card-title" style="margin:0; border:none;">2. Integrantes del Núcleo Familiar</div>
-                <button type="button" class="btn btn-primary" onclick="agregarMiembro()">+ Agregar Miembro</button>
             </div>
             <div id="miembrosContainer"></div>
+            <button type="button" class="btn btn-primary" onclick="agregarMiembro()">+ Agregar Miembro</button>
             <button type="submit" class="btn btn-success">Finalizar Registro y Enviar Censo</button>
         </div>
     </form>
@@ -263,13 +263,14 @@
                         <label>Parentesco</label>
                         <select class="m-parentesco" required onchange="actualizarCamposPorParentesco(${miembroContador})">
                             <option value="JEFE/A DE FAMILIA" selected>Jefe(a) de Hogar</option>
-                            <option value="CÓNYUGE">Esposo(a)</option>
+                            <option value="CONYUGE">Conyuge</option>
                             <option value="HIJO/A">Hijo(a)</option>
                             <option value="PADRE/MADRE">Padre/Madre</option>
                             <option value="ABUELO/A">Abuelo/a</option>
                             <option value="NIETO/A">Nieto/a</option>
                             <option value="HERMANO/A">Hermano/a</option>
                             <option value="PRIMO/A">Primo/a</option>
+                            <option value="TIO/A">Tío(a)</option>
                             <option value="SOBRINO/A">Sobrino/a</option>
                             <option value="SUEGRO/A">Suegro/a</option>
                             <option value="PARIENTE">Pariente</option>
@@ -291,14 +292,6 @@
                         <label>¿Está Embarazada?</label>
                         <select class="m-embarazo">
                             <option value="NA" selected>NA</option>
-                            <option value="NO" selected>No</option>
-                            <option value="SI">Sí</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>¿Lactante (0-11 meses)?</label>
-                        <select class="m-lactante">
                             <option value="NO" selected>No</option>
                             <option value="SI">Sí</option>
                         </select>
@@ -454,7 +447,6 @@
         const edadInput = block.querySelector('.m-edad');
         const cedulaInput = block.querySelector('.m-cedula');
         const nacSelect = block.querySelector('.m-nacionalidad'); // Referencia al select V/E
-        const lactanteSelect = block.querySelector('.m-lactante');
 
         const estInput = block.querySelector('.m-v-estado');
         const ciuInput = block.querySelector('.m-v-ciudad');
@@ -470,12 +462,6 @@
         if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) { edad--; }
 
         edadInput.value = edad;
-
-        if (edad < 1) {
-            lactanteSelect.value = "SI";
-        } else {
-            lactanteSelect.value = "NO";
-        }
 
         if (edad < 9) {
             cedulaInput.value = "MENOR S/C";
@@ -688,7 +674,6 @@ function actualizarTorres() {
                 parentesco: parentesco,
                 estadoCivil: block.querySelector('.m-civil').value,
                 embarazadas: block.querySelector('.m-embarazo').value,
-                lactantes: block.querySelector('.m-lactante').value,
                 profesion: block.querySelector('.m-profesion').value.toUpperCase(),
                 ocupacion: block.querySelector('.m-ocupacion').value.toUpperCase(),
                 Empresa: block.querySelector('.m-empresa').value.toUpperCase(),
@@ -714,7 +699,6 @@ function actualizarTorres() {
                 "Estado civil": miembro.estadoCivil,
                 "Parentesco": miembro.parentesco,
                 "¿Embarazada?": miembro.embarazadas,
-                "¿Lactante 0 - 11 meses?": miembro.lactantes,
                 "Numero de teléfono celular": miembro.telefonoCelular,
                 "Correo electrónico": miembro.correoElectronico,
                 "Profesión": miembro.profesion,
