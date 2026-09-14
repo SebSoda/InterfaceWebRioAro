@@ -394,13 +394,14 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Cantidad de Mascotas</label>
-                        <input type="number" class="m-cantMascotas" min="0" value="0" placeholder="0">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Tipo de Mascota</label>
-                        <input type="text" style="text-transform: uppercase;" class="m-tipoMascota" value="NA" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s.,\-]+$|^NA$" title="Indique perros, gatos, aves, etc., o NA si no posee.">
+                        <label>Mascotas (Cantidad y Tipo)</label>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="number" class="m-cantMascotas" style="width: 75px;" min="0" value="0" placeholder="0" 
+                                oninput="actualizarMascotas(${miembroContador})" required>
+                            <input type="text" class="m-tipoMascota" style="flex: 1; text-transform: uppercase;" value="NA" disabled 
+                                pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s.,\-]+$|^NA$" 
+                                title="Indique tipos de mascotas (ej: Perro, Gato) o NA si no posee.">
+                        </div>
                     </div>
 
                     <div class="form-group grid-votacion">
@@ -428,8 +429,10 @@
         fechaNacInput.setAttribute('max', hoy);
         fechaNacInput.setAttribute('min', minFechaStr);
 
+        // Al final de la función agregarMiembro()
         actualizarCamposPorParentesco(miembroContador);
         actualizarEmbarazo(miembroContador);
+        actualizarMascotas(miembroContador); // <-- AGREGAR ESTA LÍNEA
     }
 
     function actualizarEmbarazo(idNum) {
@@ -446,6 +449,27 @@
             embarazoSelect.disabled = false;
             if (embarazoSelect.value === 'NA') {
                 embarazoSelect.value = 'NO';
+            }
+        }
+    }
+
+    function actualizarMascotas(idNum) {
+        const block = document.getElementById(`miembro_${idNum}`);
+        if (!block) return;
+
+        const cantInput = block.querySelector('.m-cantMascotas');
+        const tipoInput = block.querySelector('.m-tipoMascota');
+
+        const cantidad = parseInt(cantInput.value, 10) || 0;
+
+        if (cantidad <= 0) {
+            cantInput.value = 0;
+            tipoInput.value = 'NA';
+            tipoInput.disabled = true;
+        } else {
+            tipoInput.disabled = false;
+            if (tipoInput.value === 'NA') {
+                tipoInput.value = ''; // Se limpia 'NA' para que el usuario escriba
             }
         }
     }
@@ -683,6 +707,9 @@
                 centroVotacionFinal = `${est}/${ciu}/${mun}/${par}/${nom}`;
             }
 
+            const cantMascotaVal = parseInt(block.querySelector('.m-cantMascotas').value, 10) || 0;
+            const tipoMascotaVal = block.querySelector('.m-tipoMascota').value.trim().toUpperCase();
+
             const miembro = {
                 nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
                 fechaNacimiento: formatearFecha(fechaNacRaw),
@@ -706,8 +733,8 @@
                 medicamento: block.querySelector('.m-medicamento').value.toUpperCase(),
                 centroVotacion: centroVotacionFinal,
                 beneficios: block.querySelector('.m-beneficio').value,
-                cantMascotas: block.querySelector('.m-cantMascotas').value || "0",
-                tipoMascota: block.querySelector('.m-tipoMascota').value.toUpperCase() || "NA"
+                cantMascotas: cantMascotaVal,
+                tipoMascota: (cantMascotaVal > 0 && tipoMascotaVal !== "") ? tipoMascotaVal : "NA"
             };
 
             datosEnvio.miembros.push(miembro);
