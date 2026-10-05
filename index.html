@@ -292,7 +292,7 @@
                         <label>¿Está Embarazada?</label>
                         <select class="m-embarazo">
                             <option value="NA" selected>NA</option>
-                            <option value="NO" selected>No</option>
+                            <option value="NO">No</option>
                             <option value="SI">Sí</option>
                         </select>
                     </div>
@@ -399,19 +399,25 @@
                             <input type="number" class="m-cantMascotas" style="width: 75px;" min="0" value="0" placeholder="0" 
                                 oninput="actualizarMascotas(${miembroContador})" required>
                             <select class="m-tipoMascota" style="flex: 1;" disabled required>
-                                        <option value="NA" selected>NA</option>
-                                        <option value="PERRO">Perro</option>
-                                        <option value="GATO">Gato</option>
-                                        <option value="PEZ">Pez</option>
-                                        <option value="AVE">Ave</option>
-                                        <option value="ROEDOR">Roedor</option>
-                                        <option value="REPTIL">Reptil</option>
-                                        <option value="OTROS">Otros</option>
+                                <option value="NA" selected>NA</option>
+                                <option value="PERRO">Perro</option>
+                                <option value="GATO">Gato</option>
+                                <option value="PEZ">Pez</option>
+                                <option value="AVE">Ave</option>
+                                <option value="ROEDOR">Roedor</option>
+                                <option value="REPTIL">Reptil</option>
+                                <option value="OTROS">Otros</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="form-group grid-votacion">
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer;">
+                                <input type="checkbox" class="m-cne" onchange="actualizarCNE(${miembroContador})" style="width: 18px; height: 18px; cursor: pointer;">
+                                ¿Está inscrito en el CNE?
+                            </label>
+                        </div>
                         <label>Ubicación y Centro de Votación</label>
                         <div class="grid-votacion-inputs">
                             <input type="text" class="m-v-estado" placeholder="Estado (Ej: Bolívar)" style="text-transform: uppercase;">
@@ -436,10 +442,10 @@
         fechaNacInput.setAttribute('max', hoy);
         fechaNacInput.setAttribute('min', minFechaStr);
 
-        // Al final de la función agregarMiembro()
         actualizarCamposPorParentesco(miembroContador);
         actualizarEmbarazo(miembroContador);
-        actualizarMascotas(miembroContador); // <-- AGREGAR ESTA LÍNEA
+        actualizarMascotas(miembroContador);
+        actualizarCNE(miembroContador);
     }
 
     function actualizarEmbarazo(idNum) {
@@ -476,13 +482,56 @@
         } else {
             tipoInput.disabled = false;
             if (tipoInput.value === 'NA') {
-                tipoInput.value = 'PERRO'; // Opción por defecto al ser > 0
+                tipoInput.value = 'PERRO';
             }
         }
     }
 
     function removerMiembro(id) {
         document.getElementById(`miembro_${id}`).remove();
+    }
+
+    function actualizarCNE(idNum) {
+        const block = document.getElementById(`miembro_${idNum}`);
+        if (!block) return;
+
+        const cneCheckbox = block.querySelector('.m-cne');
+        const estInput = block.querySelector('.m-v-estado');
+        const ciuInput = block.querySelector('.m-v-ciudad');
+        const munInput = block.querySelector('.m-v-Municipio');
+        const parInput = block.querySelector('.m-v-parroquia');
+        const nomInput = block.querySelector('.m-v-nombre');
+        const camposVotacion = [estInput, ciuInput, munInput, parInput, nomInput];
+
+        if (cneCheckbox.disabled) {
+            cneCheckbox.checked = false;
+            camposVotacion.forEach(input => {
+                if (input) {
+                    input.value = "NA";
+                    input.disabled = true;
+                    input.required = false;
+                }
+            });
+            return;
+        }
+
+        if (cneCheckbox.checked) {
+            camposVotacion.forEach(input => {
+                if (input) {
+                    if (input.value === "NA") input.value = "";
+                    input.disabled = false;
+                    input.required = true;
+                }
+            });
+        } else {
+            camposVotacion.forEach(input => {
+                if (input) {
+                    input.value = "NA";
+                    input.disabled = true;
+                    input.required = false;
+                }
+            });
+        }
     }
 
     function calcularEdadYValidarId(idNum) {
@@ -494,13 +543,7 @@
         const cedulaInput = block.querySelector('.m-cedula');
         const nacSelect = block.querySelector('.m-nacionalidad');
         const lactanteSelect = block.querySelector('.m-lactante');
-
-
-        const estInput = block.querySelector('.m-v-estado');
-        const ciuInput = block.querySelector('.m-v-ciudad');
-        const munInput = block.querySelector('.m-v-Municipio');
-        const parInput = block.querySelector('.m-v-parroquia');
-        const nomInput = block.querySelector('.m-v-nombre');
+        const cneCheckbox = block.querySelector('.m-cne');
 
         if (!fechaNacValue) return;
 
@@ -518,7 +561,6 @@
             lactanteSelect.value = "NO";
         }
 
-
         if (edad < 9) {
             cedulaInput.value = "MENOR S/C";
             cedulaInput.disabled = true;
@@ -529,24 +571,14 @@
             if (nacSelect) nacSelect.disabled = false;
         }
 
-        const camposVotacion = [estInput, ciuInput, munInput, parInput, nomInput];
         if (edad < 15) {
-            camposVotacion.forEach(input => {
-                if (input) {
-                    input.value = "NA";
-                    input.disabled = true;
-                    input.required = false;
-                }
-            });
+            cneCheckbox.checked = false;
+            cneCheckbox.disabled = true;
         } else {
-            camposVotacion.forEach(input => {
-                if (input) {
-                    if (input.value === "NA") input.value = "";
-                    input.disabled = false;
-                    input.required = true;
-                }
-            });
+            cneCheckbox.disabled = false;
         }
+
+        actualizarCNE(idNum);
     }
 
     function generarIdMenor(comunidad, torre, casa, fechaNacStr) {
@@ -703,6 +735,7 @@
                 cedulaFinal = `${nacionalidad}${cedulaIngresada}`;
             }
 
+            const cneInscrito = block.querySelector('.m-cne').checked;
             const est = block.querySelector('.m-v-estado').value.trim().toUpperCase() || "NA";
             const ciu = block.querySelector('.m-v-ciudad').value.trim().toUpperCase() || "NA";
             const mun = block.querySelector('.m-v-Municipio').value.trim().toUpperCase() || "NA";
@@ -710,7 +743,7 @@
             const nom = block.querySelector('.m-v-nombre').value.trim().toUpperCase() || "NA";
 
             let centroVotacionFinal = "NA";
-            if (edad >= 15) {
+            if (edad >= 15 && cneInscrito) {
                 centroVotacionFinal = `${est}/${ciu}/${mun}/${par}/${nom}`;
             }
 
@@ -728,7 +761,7 @@
                 parentesco: parentesco,
                 estadoCivil: block.querySelector('.m-civil').value,
                 embarazadas: block.querySelector('.m-embarazo').value,
-                 lactantes: block.querySelector('.m-lactante').value,
+                lactantes: block.querySelector('.m-lactante').value,
                 profesion: block.querySelector('.m-profesion').value.toUpperCase(),
                 ocupacion: block.querySelector('.m-ocupacion').value.toUpperCase(),
                 Empresa: block.querySelector('.m-empresa').value.toUpperCase(),
@@ -778,7 +811,7 @@
                 "Condición de Vivienda": viviendaGlobal.condicionVivienda,
                 "Beneficios": miembro.beneficios,
                 "Cant. Mascotas": miembro.cantMascotas,
-               "Tipo de mascota": miembro.tipoMascota
+                "Tipo de mascota": miembro.tipoMascota
             });
         });
 
