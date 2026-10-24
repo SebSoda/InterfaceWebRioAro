@@ -167,8 +167,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Fecha de Ingreso a la Comunidad</label>
-                    <input type="date" id="fechaIngreso" required>
+                    <label>Fecha de Ingreso a la Comunidad (DD/MM/AAAA)</label>
+                    <input type="text" id="fechaIngreso" placeholder="DD/MM/AAAA" maxlength="10" required oninput="formatearEntradaFecha(this)" onblur="validarFechaCompleta(this)">
                 </div>
             </div>
         </div>
@@ -216,8 +216,87 @@
         { value: "43 KG", text: "43 Kg" },
     ];
 
+    // Formateador dinámico con restricciones de límites
+    function formatearEntradaFecha(input) {
+        let limpio = input.value.replace(/\D/g, '');
+        let formateado = '';
+
+        // Días (01 a 31)
+        if (limpio.length > 0) {
+            let dia = limpio.substring(0, 2);
+            if (dia.length === 2) {
+                let diaNum = parseInt(dia, 10);
+                if (diaNum > 31) dia = '31';
+                if (diaNum === 0) dia = '01';
+            }
+            formateado += dia;
+        }
+
+        // Meses (01 a 12)
+        if (limpio.length > 2) {
+            let mes = limpio.substring(2, 4);
+            if (mes.length === 2) {
+                let mesNum = parseInt(mes, 10);
+                if (mesNum > 12) mes = '12';
+                if (mesNum === 0) mes = '01';
+            }
+            formateado += '/' + mes;
+        }
+
+        // Año (hasta el año actual)
+        if (limpio.length > 4) {
+            let anio = limpio.substring(4, 8);
+            formateado += '/' + anio;
+        }
+
+        input.value = formateado;
+    }
+
+    // Validación estricta al perder el foco (onblur)
+    function validarFechaCompleta(input) {
+        const valor = input.value;
+        if (!valor) return;
+
+        const partes = valor.split('/');
+        if (partes.length !== 3 || partes[2].length < 4) {
+            alert("Formato de fecha incompleto. Debe ser DD/MM/AAAA.");
+            input.value = "";
+            return;
+        }
+
+        let dia = parseInt(partes[0], 10);
+        let mes = parseInt(partes[1], 10);
+        let anio = parseInt(partes[2], 10);
+
+        const anioActual = new Date().getFullYear();
+
+        if (dia < 1 || dia > 31 || mes < 1 || mes > 12) {
+            alert("Fecha no válida. Verifique el día y el mes.");
+            input.value = "";
+            return;
+        }
+
+        if (anio < 1900 || anio > anioActual) {
+            alert(`El año debe estar entre 1900 y ${anioActual}.`);
+            input.value = "";
+            return;
+        }
+    }
+
+    // Convierte formato DD/MM/YYYY a YYYY-MM-DD para operaciones internas / cálculos
+    function convertirAFormatoISO(fechaStr) {
+        if (!fechaStr) return "";
+        const partes = fechaStr.split('/');
+        if (partes.length === 3) {
+            return `${partes[2]}-${partes[1]}-${partes[0]}`;
+        }
+        return fechaStr;
+    }
+
+    // Convierte formato YYYY-MM-DD a DD/MM/YYYY si fuera necesario
     function formatearFecha(fechaStr) {
         if (!fechaStr) return "N/A";
+        if (fechaStr.includes('/')) return fechaStr; // Ya está formateada
         const partes = fechaStr.split('-');
         if (partes.length === 3) {
             return `${partes[2]}/${partes[1]}/${partes[0]}`;
@@ -586,8 +665,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>Fecha de Nacimiento</label>
-                        <input type="date" class="m-fechaNac" required onchange="calcularEdadYValidarId(${miembroContador})">
+                        <label>Fecha de Nacimiento (DD/MM/AAAA)</label>
+                        <input type="text" class="m-fechaNac" placeholder="DD/MM/AAAA" maxlength="10" required oninput="formatearEntradaFecha(this)" onblur="validarFechaCompleta(this); calcularEdadYValidarId(${miembroContador})">
                     </div>
 
                     <div class="form-group">
@@ -765,16 +844,6 @@
             </div>`;
         container.insertAdjacentHTML('beforeend', miembroHtml);
 
-        const hoy = new Date().toISOString().split('T')[0];
-        const fechaMinima = new Date();
-        fechaMinima.setFullYear(fechaMinima.getFullYear() - 120);
-        const minFechaStr = fechaMinima.toISOString().split('T')[0];
-
-        const blockActual = document.getElementById(`miembro_${miembroContador}`);
-        const fechaNacInput = blockActual.querySelector('.m-fechaNac');
-        fechaNacInput.setAttribute('max', hoy);
-        fechaNacInput.setAttribute('min', minFechaStr);
-
         actualizarCamposPorParentesco(miembroContador);
         actualizarEmbarazo(miembroContador);
         actualizarCNE(miembroContador);
@@ -858,9 +927,12 @@
         const lactanteSelect = block.querySelector('.m-lactante');
         const cneCheckbox = block.querySelector('.m-cne');
 
-        if (!fechaNacValue) return;
+        if (!fechaNacValue || fechaNacValue.length < 10) return;
 
-        const nacimiento = new Date(fechaNacValue + 'T00:00:00');
+        const fechaIso = convertirAFormatoISO(fechaNacValue);
+        const nacimiento = new Date(fechaIso + 'T00:00:00');
+        if (isNaN(nacimiento.getTime())) return;
+
         const hoy = new Date();
         let edad = hoy.getFullYear() - nacimiento.getFullYear();
         const mes = hoy.getMonth() - nacimiento.getMonth();
@@ -896,11 +968,11 @@
 
     function generarIdMenor(comunidad, torre, casa, fechaNacStr) {
         if (!fechaNacStr) return "MENOR_S_C";
-        const partes = fechaNacStr.split('-');
+        const partes = fechaNacStr.split('/');
         if (partes.length === 3) {
-            const anio = partes[0];
+            const dia = partes[0];
             const mes = partes[1];
-            const dia = partes[2];
+            const anio = partes[2];
             const casaLimpia = casa.replace(/\s+/g, '');
             return `${comunidad}${torre}${casaLimpia}${dia}${mes}${anio}`;
         }
@@ -1012,7 +1084,7 @@
             condicionVivienda: document.getElementById('condicionVivienda').value,
             estadoOcupante: document.getElementById('estadoOcupante').value,
             pesoBombona: bombonasFormateadas,
-            fechaIngreso: formatearFecha(document.getElementById('fechaIngreso').value),
+            fechaIngreso: document.getElementById('fechaIngreso').value,
         };
         datosEnvio.vivienda = viviendaGlobal;
 
@@ -1025,8 +1097,9 @@
             const fechaNacRaw = block.querySelector('.m-fechaNac').value;
             
             let edad = 0;
-            if (fechaNacRaw) {
-                const nac = new Date(fechaNacRaw + 'T00:00:00');
+            if (fechaNacRaw && fechaNacRaw.length === 10) {
+                const fechaIso = convertirAFormatoISO(fechaNacRaw);
+                const nac = new Date(fechaIso + 'T00:00:00');
                 const hoy = new Date();
                 edad = hoy.getFullYear() - nac.getFullYear();
                 const m = hoy.getMonth() - nac.getMonth();
@@ -1068,7 +1141,7 @@
 
             const miembro = {
                 nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
-                fechaNacimiento: formatearFecha(fechaNacRaw),
+                fechaNacimiento: fechaNacRaw,
                 edad: edad,
                 cedulaIdentidad: cedulaFinal,
                 telefonoCelular: block.querySelector('.m-telefono').value || "N/A",
@@ -1173,11 +1246,6 @@
         agregarFilaBombona();
         agregarMiembro(); 
         actualizarTorres();
-        
-        const hoy = new Date().toISOString().split('T')[0];
-        const fechaIngreso = document.getElementById('fechaIngreso');
-        fechaIngreso.setAttribute('max', hoy);
-        fechaIngreso.setAttribute('min', '1900-01-01');
     };
 </script>
 </body>
