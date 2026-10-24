@@ -256,6 +256,91 @@
         return "/" + seleccionados.join("/");
     }
 
+    // Controla si la cantidad es 0 (bloquea el select en NA) o mayor (>0 habilita el select)
+    function actualizarEstadoFilaMascota(inputCant) {
+        const fila = inputCant.closest('.fila-mascota');
+        const selectTipo = fila.querySelector('.m-tipoMascotaItem');
+        
+        const cantidad = parseInt(inputCant.value, 10) || 0;
+
+        if (cantidad <= 0) {
+            inputCant.value = 0;
+            selectTipo.value = 'NA';
+            selectTipo.disabled = true;
+        } else {
+            selectTipo.disabled = false;
+            if (selectTipo.value === 'NA') {
+                selectTipo.value = 'PERRO'; // Asigna por defecto Perro al subir de 0
+            }
+        }
+    }
+
+    // Controla si seleccionan NA manualmente en el desplegable (devuelve la cantidad a 0 y bloquea)
+    function actualizarTipoMascota(selectTipo) {
+        const fila = selectTipo.closest('.fila-mascota');
+        const inputCant = fila.querySelector('.m-cantMascotaItem');
+
+        if (selectTipo.value === 'NA') {
+            inputCant.value = 0;
+            selectTipo.disabled = true;
+        }
+    }
+
+    // Recopila todas las filas de mascotas y genera la cadena formateada: /*cant* tipo/
+    function obtenerTextoMascotasFormateado(block) {
+        const filas = block.querySelectorAll('.fila-mascota');
+        let textoResultado = "";
+
+        filas.forEach(fila => {
+            const cant = parseInt(fila.querySelector('.m-cantMascotaItem').value, 10) || 0;
+            const tipo = fila.querySelector('.m-tipoMascotaItem').value.trim().toUpperCase();
+
+            if (cant > 0 && tipo !== 'NA') {
+                textoResultado += `/*${cant}* ${tipo}`;
+            }
+        });
+
+        if (textoResultado.length > 0) {
+            textoResultado += "/";
+            return textoResultado;
+        }
+
+        return "NA";
+    }
+
+    function agregarFilaMascota(idMiembro) {
+        const contenedor = document.getElementById(`contenedorMascotas_${idMiembro}`);
+        if (!contenedor) return;
+
+        const numFilas = contenedor.querySelectorAll('.fila-mascota').length;
+        
+        const filaDiv = document.createElement('div');
+        filaDiv.className = 'fila-mascota';
+        filaDiv.style.cssText = 'display: flex; gap: 6px; align-items: center;';
+
+        filaDiv.innerHTML = `
+            <input type="number" class="m-cantMascotaItem" style="width: 80px;" min="0" value="0" placeholder="0" 
+                oninput="actualizarEstadoFilaMascota(this)" required>
+            <select class="m-tipoMascotaItem" style="flex: 1;" onchange="actualizarTipoMascota(this)" required>
+                <option value="NA" selected>NA</option>
+                <option value="PERRO">Perro</option>
+                <option value="GATO">Gato</option>
+                <option value="PEZ">Pez</option>
+                <option value="AVE">Ave</option>
+                <option value="ROEDOR">Roedor</option>
+                <option value="REPTIL">Reptil</option>
+                <option value="OTROS">Otros</option>
+            </select>
+            ${numFilas > 0 ? `<button type="button" class="btn btn-danger" style="padding: 6px 10px;" onclick="this.parentElement.remove()">-</button>` : ''}
+        `;
+
+        contenedor.appendChild(filaDiv);
+        
+        // Aplicar estado inicial bloqueado por tener 0 por defecto
+        const cantInput = filaDiv.querySelector('.m-cantMascotaItem');
+        actualizarEstadoFilaMascota(cantInput);
+    }
+
     function agregarMiembro() {
         miembroContador++;
         const container = document.getElementById('miembrosContainer');
@@ -438,21 +523,13 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Mascotas (Cantidad y Tipo)</label>
-                        <div style="display: flex; gap: 6px;">
-                            <input type="number" class="m-cantMascotas" style="width: 75px;" min="0" value="0" placeholder="0" 
-                                oninput="actualizarMascotas(${miembroContador})" required>
-                            <select class="m-tipoMascota" style="flex: 1;" disabled required>
-                                <option value="NA" selected>NA</option>
-                                <option value="PERRO">Perro</option>
-                                <option value="GATO">Gato</option>
-                                <option value="PEZ">Pez</option>
-                                <option value="AVE">Ave</option>
-                                <option value="ROEDOR">Roedor</option>
-                                <option value="REPTIL">Reptil</option>
-                                <option value="OTROS">Otros</option>
-                            </select>
+                    <div class="form-group grid-votacion" style="margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <label style="font-weight: 600; font-size: 13px; color: #555; margin: 0;">Mascotas del Miembro</label>
+                            <button type="button" class="btn btn-primary" style="padding: 4px 10px; font-size: 13px;" onclick="agregarFilaMascota(${miembroContador})">+ Añadir Mascota</button>
+                        </div>
+                        <div id="contenedorMascotas_${miembroContador}" style="display: flex; flex-direction: column; gap: 8px;">
+                            <!-- Se autoinicializa con la primera fila -->
                         </div>
                     </div>
 
@@ -489,8 +566,10 @@
 
         actualizarCamposPorParentesco(miembroContador);
         actualizarEmbarazo(miembroContador);
-        actualizarMascotas(miembroContador);
         actualizarCNE(miembroContador);
+        
+        // Inicializar la primera fila dinámica de mascotas
+        agregarFilaMascota(miembroContador);
     }
 
     function actualizarEmbarazo(idNum) {
@@ -507,27 +586,6 @@
             embarazoSelect.disabled = false;
             if (embarazoSelect.value === 'NA') {
                 embarazoSelect.value = 'NO';
-            }
-        }
-    }
-
-    function actualizarMascotas(idNum) {
-        const block = document.getElementById(`miembro_${idNum}`);
-        if (!block) return;
-
-        const cantInput = block.querySelector('.m-cantMascotas');
-        const tipoInput = block.querySelector('.m-tipoMascota');
-
-        const cantidad = parseInt(cantInput.value, 10) || 0;
-
-        if (cantidad <= 0) {
-            cantInput.value = 0;
-            tipoInput.value = 'NA';
-            tipoInput.disabled = true;
-        } else {
-            tipoInput.disabled = false;
-            if (tipoInput.value === 'NA') {
-                tipoInput.value = 'PERRO';
             }
         }
     }
@@ -792,12 +850,10 @@
                 centroVotacionFinal = `${est}/${ciu}/${mun}/${par}/${nom}`;
             }
 
-            const cantMascotaVal = parseInt(block.querySelector('.m-cantMascotas').value, 10) || 0;
-            const tipoMascotaVal = block.querySelector('.m-tipoMascota').value.trim().toUpperCase();
-
-            // Formatear enfermedades y beneficios seleccionados (/Opción1/Opción2/...)
+            // Formatear enfermedades, beneficios y mascotas
             const enfermedadesFinal = obtenerValoresSeleccionados(block, '.chk-enfermedad');
             const beneficiosFinal = obtenerValoresSeleccionados(block, '.chk-beneficio');
+            const mascotasFormateadas = obtenerTextoMascotasFormateado(block);
 
             const miembro = {
                 nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
@@ -822,8 +878,7 @@
                 medicamento: block.querySelector('.m-medicamento').value.toUpperCase(),
                 centroVotacion: centroVotacionFinal,
                 beneficios: beneficiosFinal,
-                cantMascotas: cantMascotaVal,
-                tipoMascota: (cantMascotaVal > 0) ? tipoMascotaVal : "NA"
+                tipoMascota: mascotasFormateadas
             };
 
             datosEnvio.miembros.push(miembro);
@@ -859,8 +914,7 @@
                 "Numero de Casa / Apto": viviendaGlobal.numeroCasaApto,
                 "Condición de Vivienda": viviendaGlobal.condicionVivienda,
                 "Beneficios": miembro.beneficios,
-                "Cant. Mascotas": miembro.cantMascotas,
-                "Tipo de mascota": miembro.tipoMascota
+                "Tipo de mascota": mascotasFormateadas
             });
         });
 
