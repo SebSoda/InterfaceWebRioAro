@@ -30,54 +30,55 @@
         .btn-success { background-color: var(--accent-green); color: white; width: 100%; font-size: 16px; margin-top: 15px; }
         .btn-danger { background-color: #DC3545; color: white; padding: 6px 12px; font-size: 12px; }
         .flex-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+
+        /* Estilos para contenedores de Selección Múltiple */
+        .checkbox-group-container {
+            grid-column: 1 / -1;
+            background: #ffffff;
+            border: 1px solid #BACCDD;
+            border-radius: 6px;
+            padding: 12px;
+        }
+        .checkbox-group-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 8px 12px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
         /* --- ADAPTACIÓN RESPONSIVA PARA MÓVILES --- */
         @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-
-            .card {
-                padding: 15px;
-            }
-
-            /* Fuerza a que todos los formularios ocupen 1 columna en teléfonos */
-            .grid-3 {
-                grid-template-columns: 1fr !important;
-                gap: 12px;
-            }
-
-            /* Encabezado del miembro del hogar */
-            .flex-between {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-
-            /* Solución al Centro de Votación */
-            .form-group[style*="grid-column: span 3;"] {
-                grid-column: span 1 !important;
-            }
-
-            .form-group[style*="grid-column: span 3;"] > div {
-                grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
-                gap: 8px !important;
-            }
-
-            /* Solución a Cédula de Identidad */
-            .m-cedula {
-                min-width: 0; /* Evita desbordamiento flex */
-            }
+            body { padding: 10px; }
+            .card { padding: 15px; }
+            .grid-3 { grid-template-columns: 1fr !important; gap: 12px; }
+            .flex-between { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .form-group[style*="grid-column: span 3;"] { grid-column: span 1 !important; }
+            .form-group[style*="grid-column: span 3;"] > div { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important; gap: 8px !important; }
+            .m-cedula { min-width: 0; }
+            .checkbox-grid { grid-template-columns: 1fr; }
         }
 
-        .grid-votacion {
-            grid-column: 1 / -1;
-        }
-
-        .grid-votacion-inputs {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 10px;
-        }
+        .grid-votacion { grid-column: 1 / -1; }
+        .grid-votacion-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
     </style>
 </head>
 <body>
@@ -184,6 +185,18 @@
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwYodvR704GDZDJWlDnsfwfvPl9xRGnc9pqaFF85pZYGakIoN4lIdjHQ1EYG15KZb9T/exec";
     let miembroContador = 0;
 
+    const listaEnfermedades = [
+        "Ninguna", "Hipertensión", "Apnea de sueño", "Enfermedad cardiovascular",
+        "Enfermedad musculo-esquelética", "Diabetes", "Asma", "Hiperplasia prostática",
+        "Enfermedad mental", "Tiroides y problemas hormonales", "Lupus",
+        "Artritis / Artrosis", "Enfermedad renal", "Trastorno gastrointestinal",
+        "Alergias", "Cáncer", "Glaucoma", "Parkinson", "Otro"
+    ];
+
+    const listaBeneficios = [
+        "Ninguno", "JUBILACIÓN", "PENSIÓN", "CARNET DE LA PATRIA", "OTRO"
+    ];
+
     function formatearFecha(fechaStr) {
         if (!fechaStr) return "N/A";
         const partes = fechaStr.split('-');
@@ -204,9 +217,63 @@
         return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`;
     }
 
+    function alternarNinguno(idNum, tipo, checkboxCambiado) {
+        const block = document.getElementById(`miembro_${idNum}`);
+        if (!block) return;
+
+        const selectorClase = tipo === 'enfermedad' ? '.chk-enfermedad' : '.chk-beneficio';
+        const checkboxes = block.querySelectorAll(selectorClase);
+        
+        if (checkboxCambiado.value.toUpperCase() === 'NINGUNA' || checkboxCambiado.value.toUpperCase() === 'NINGUNO') {
+            if (checkboxCambiado.checked) {
+                checkboxes.forEach(chk => {
+                    if (chk !== checkboxCambiado) chk.checked = false;
+                });
+            }
+        } else {
+            if (checkboxCambiado.checked) {
+                checkboxes.forEach(chk => {
+                    if (chk.value.toUpperCase() === 'NINGUNA' || chk.value.toUpperCase() === 'NINGUNO') {
+                        chk.checked = false;
+                    }
+                });
+            }
+        }
+    }
+
+    function obtenerValoresSeleccionados(block, selectorClase) {
+        const checkboxes = block.querySelectorAll(selectorClase);
+        const seleccionados = [];
+        checkboxes.forEach(chk => {
+            if (chk.checked) {
+                seleccionados.push(chk.value);
+            }
+        });
+
+        if (seleccionados.length === 0) {
+            return "Ninguno";
+        }
+        return "/" + seleccionados.join("/");
+    }
+
     function agregarMiembro() {
         miembroContador++;
         const container = document.getElementById('miembrosContainer');
+
+        let enfermedadesHtml = listaEnfermedades.map((enf, idx) => `
+            <label class="checkbox-item">
+                <input type="checkbox" class="chk-enfermedad" value="${enf}" ${idx === 0 ? 'checked' : ''} onchange="alternarNinguno(${miembroContador}, 'enfermedad', this)">
+                ${enf}
+            </label>
+        `).join('');
+
+        let beneficiosHtml = listaBeneficios.map((ben, idx) => `
+            <label class="checkbox-item">
+                <input type="checkbox" class="chk-beneficio" value="${ben}" ${idx === 0 ? 'checked' : ''} onchange="alternarNinguno(${miembroContador}, 'beneficio', this)">
+                ${ben}
+            </label>
+        `).join('');
+
         const miembroHtml = `
             <div class="miembro-block" id="miembro_${miembroContador}">
                 <div class="flex-between">
@@ -351,30 +418,12 @@
                         <label>Necesidad Especial</label>
                         <input type="text" style="text-transform: uppercase;" class="m-necesidadEspecial" value="NA" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^NA$" title="Solo letras, números y signos comunes.">
                     </div>
-                    
-                    <div class="form-group">
-                        <label>Enfermedad Crónica</label>
-                        <select class="m-enfermedad">
-                            <option value="Ninguna" selected>Ninguna</option>
-                            <option value="Hipertensión">Hipertensión</option>
-                            <option value="Apnea de sueño">Apnea de sueño</option>
-                            <option value="Enfermedad cardiovascular">Enfermedad cardiovascular</option>
-                            <option value="Enfermedad musculo-esquelética">Enfermedad musculo-esquelética</option>
-                            <option value="Diabetes">Diábetes</option>
-                            <option value="Asma">Asma</option>
-                            <option value="Hiperplasia prostática">Hiperplasia prostática</option>
-                            <option value="Enfermedad mental">Enfermedad mental</option>
-                            <option value="Tiroides y problemas hormonales">Tiroides y problemas hormonales</option>
-                            <option value="Lupus">Lupus</option>
-                            <option value="Artritis / Artrosis">Artritis / Artrosis</option>
-                            <option value="Enfermedad renal">Enfermedad renal</option>
-                            <option value="Trastorno gastrointestinal">Trastorno gastrointestinal</option>
-                            <option value="Alergias">Alergias</option>
-                            <option value="Cáncer">Cáncer</option>
-                            <option value="Glaucoma">Glaucoma</option>
-                            <option value="Parkinson">Parkinson</option>
-                            <option value="Otro">Otro</option>
-                        </select>
+
+                    <div class="checkbox-group-container">
+                        <span class="checkbox-group-title">Enfermedades Crónicas</span>
+                        <div class="checkbox-grid">
+                            ${enfermedadesHtml}
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -382,15 +431,11 @@
                         <input type="text" style="text-transform: uppercase;" class="m-medicamento" value="NA" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^NA$" title="Solo letras, números y signos comunes.">
                     </div>
                     
-                    <div class="form-group">
-                        <label>Beneficios del estado</label>
-                        <select class="m-beneficio">
-                            <option value="NINGUNO" selected>Ninguno</option>
-                            <option value="JUBILACIÓN">Jubilacion</option>
-                            <option value="PENSIÓN">Pensión</option>
-                            <option value="CARNET DE LA PATRIA">Carnet de la Patria</option>
-                            <option value="OTRO">Otro</option>
-                        </select>
+                    <div class="checkbox-group-container">
+                        <span class="checkbox-group-title">Beneficios del Estado</span>
+                        <div class="checkbox-grid">
+                            ${beneficiosHtml}
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -434,7 +479,7 @@
         // --- LÍMITE DE FECHAS DE NACIMIENTO ---
         const hoy = new Date().toISOString().split('T')[0];
         const fechaMinima = new Date();
-        fechaMinima.setFullYear(fechaMinima.getFullYear() - 120); // Máximo 120 años de edad
+        fechaMinima.setFullYear(fechaMinima.getFullYear() - 120);
         const minFechaStr = fechaMinima.toISOString().split('T')[0];
 
         const blockActual = document.getElementById(`miembro_${miembroContador}`);
@@ -750,6 +795,10 @@
             const cantMascotaVal = parseInt(block.querySelector('.m-cantMascotas').value, 10) || 0;
             const tipoMascotaVal = block.querySelector('.m-tipoMascota').value.trim().toUpperCase();
 
+            // Formatear enfermedades y beneficios seleccionados (/Opción1/Opción2/...)
+            const enfermedadesFinal = obtenerValoresSeleccionados(block, '.chk-enfermedad');
+            const beneficiosFinal = obtenerValoresSeleccionados(block, '.chk-beneficio');
+
             const miembro = {
                 nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
                 fechaNacimiento: formatearFecha(fechaNacRaw),
@@ -769,10 +818,10 @@
                 estudioCursado: block.querySelector('.m-estudio').value,
                 tipoDiscapacidad: block.querySelector('.m-discapacidad').value.toUpperCase(),
                 necesidadEspecial: block.querySelector('.m-necesidadEspecial').value.toUpperCase(),
-                enfermedadesCronicas: block.querySelector('.m-enfermedad').value,
+                enfermedadesCronicas: enfermedadesFinal,
                 medicamento: block.querySelector('.m-medicamento').value.toUpperCase(),
                 centroVotacion: centroVotacionFinal,
-                beneficios: block.querySelector('.m-beneficio').value,
+                beneficios: beneficiosFinal,
                 cantMascotas: cantMascotaVal,
                 tipoMascota: (cantMascotaVal > 0) ? tipoMascotaVal : "NA"
             };
