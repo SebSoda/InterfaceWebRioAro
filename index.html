@@ -154,16 +154,18 @@
                         <option value="AUSENTE">Ausente</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Peso de Bombona de Gas</label>
-                    <select id="pesoBombona" required>
-                        <option value="10 KG">10 Kg</option>
-                        <option value="18 KG">18 Kg</option>
-                        <option value="43 KG">43 Kg</option>
-                        <option value="GAS DIRECTO">Gas Directo</option>
-                        <option value="NO POSEE" selected>No posee</option>
-                    </select>
+                
+                <!-- CASILLA DINÁMICA DE BOMBONA DE GAS -->
+                <div class="form-group grid-votacion" style="margin-top: 5px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label style="font-weight: 600; font-size: 13px; color: #555; margin: 0;">Bombonas de Gas de la Vivienda</label>
+                        <button type="button" class="btn btn-primary btn-add-bombona" style="padding: 4px 10px; font-size: 13px;" onclick="agregarFilaBombona()">+ Añadir Bombona</button>
+                    </div>
+                    <div id="contenedorBombonas" style="display: flex; flex-direction: column; gap: 8px;">
+                        <!-- Se autoinicializa en window.onload -->
+                    </div>
                 </div>
+
                 <div class="form-group">
                     <label>Fecha de Ingreso a la Comunidad</label>
                     <input type="date" id="fechaIngreso" required>
@@ -208,6 +210,12 @@
         { value: "OTROS", text: "Otros" }
     ];
 
+    const opcionesTiposBombonas = [
+        { value: "10 KG", text: "10 Kg" },
+        { value: "18 KG", text: "18 Kg" },
+        { value: "43 KG", text: "43 Kg" },
+    ];
+
     function formatearFecha(fechaStr) {
         if (!fechaStr) return "N/A";
         const partes = fechaStr.split('-');
@@ -226,6 +234,145 @@
         const minutos = String(hoy.getMinutes()).padStart(2, '0');
         const segundos = String(hoy.getSeconds()).padStart(2, '0');
         return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`;
+    }
+
+    /* --- LÓGICA DINÁMICA DE BOMBONAS DE GAS --- */
+    function actualizarOpcionesBombonasGlobal() {
+        const contenedor = document.getElementById('contenedorBombonas');
+        if (!contenedor) return;
+
+        const selects = contenedor.querySelectorAll('.v-tipoBombonaItem');
+        const btnAdd = document.querySelector('.btn-add-bombona');
+        const totalFilas = selects.length;
+
+        const seleccionadosActuales = [];
+        selects.forEach(sel => {
+            if (sel.value && sel.value !== 'NO POSEE') {
+                seleccionadosActuales.push(sel.value);
+            }
+        });
+
+        selects.forEach(sel => {
+            const valorActual = sel.value;
+            sel.innerHTML = `<option value="NO POSEE">NO POSEE</option>`;
+
+            opcionesTiposBombonas.forEach(opt => {
+                const yaSeleccionadoEnOtro = seleccionadosActuales.includes(opt.value) && valorActual !== opt.value;
+                if (!yaSeleccionadoEnOtro) {
+                    const optionEl = document.createElement('option');
+                    optionEl.value = opt.value;
+                    optionEl.textContent = opt.text;
+                    if (opt.value === valorActual) {
+                        optionEl.selected = true;
+                    }
+                    sel.appendChild(optionEl);
+                }
+            });
+
+            if (![...sel.options].some(o => o.value === valorActual)) {
+                sel.value = 'NO POSEE';
+            }
+        });
+
+        if (btnAdd) {
+            if (seleccionadosActuales.length >= opcionesTiposBombonas.length || totalFilas >= opcionesTiposBombonas.length) {
+                btnAdd.disabled = true;
+                btnAdd.title = "Se ha alcanzado el límite máximo de los tipos de servicio de gas disponibles.";
+            } else {
+                btnAdd.disabled = false;
+                btnAdd.title = "";
+            }
+        }
+    }
+
+    function actualizarEstadoFilaBombona(inputCant) {
+        const fila = inputCant.closest('.fila-bombona');
+        const selectTipo = fila.querySelector('.v-tipoBombonaItem');
+        const contenedor = document.getElementById('contenedorBombonas');
+
+        const cantidad = parseInt(inputCant.value, 10) || 0;
+
+        if (cantidad <= 0) {
+            inputCant.value = 0;
+            selectTipo.value = 'NO POSEE';
+            selectTipo.disabled = true;
+        } else {
+            selectTipo.disabled = false;
+            if (selectTipo.value === 'NO POSEE') {
+                const selects = contenedor.querySelectorAll('.v-tipoBombonaItem');
+                const usados = [...selects].map(s => s.value);
+                const disponible = opcionesTiposBombonas.find(o => !usados.includes(o.value));
+                if (disponible) {
+                    selectTipo.value = disponible.value;
+                }
+            }
+        }
+        actualizarOpcionesBombonasGlobal();
+    }
+
+    function actualizarTipoBombona(selectTipo) {
+        const fila = selectTipo.closest('.fila-bombona');
+        const inputCant = fila.querySelector('.v-cantBombonaItem');
+
+        if (selectTipo.value === 'NO POSEE') {
+            inputCant.value = 0;
+            selectTipo.disabled = true;
+        }
+        actualizarOpcionesBombonasGlobal();
+    }
+
+    function agregarFilaBombona() {
+        const contenedor = document.getElementById('contenedorBombonas');
+        if (!contenedor) return;
+
+        const numFilas = contenedor.querySelectorAll('.fila-bombona').length;
+        if (numFilas >= opcionesTiposBombonas.length) return;
+
+        const filaDiv = document.createElement('div');
+        filaDiv.className = 'fila-bombona';
+        filaDiv.style.cssText = 'display: flex; gap: 6px; align-items: center;';
+
+        filaDiv.innerHTML = `
+            <input type="number" class="v-cantBombonaItem" style="width: 80px;" min="0" value="0" placeholder="0" 
+                oninput="actualizarEstadoFilaBombona(this)" required>
+            <select class="v-tipoBombonaItem" style="flex: 1;" onchange="actualizarTipoBombona(this)" required>
+                <option value="NO POSEE" selected>NO POSEE</option>
+            </select>
+            ${numFilas > 0 ? `<button type="button" class="btn btn-danger" style="padding: 6px 10px;" onclick="removerFilaBombona(this)">-</button>` : ''}
+        `;
+
+        contenedor.appendChild(filaDiv);
+        const cantInput = filaDiv.querySelector('.v-cantBombonaItem');
+        actualizarEstadoFilaBombona(cantInput);
+    }
+
+    function removerFilaBombona(btn) {
+        btn.parentElement.remove();
+        actualizarOpcionesBombonasGlobal();
+    }
+
+    function obtenerTextoBombonasFormateado() {
+        const contenedor = document.getElementById('contenedorBombonas');
+        if (!contenedor) return "NO POSEE";
+
+        const filas = contenedor.querySelectorAll('.fila-bombona');
+        let textoResultado = "";
+
+        filas.forEach(fila => {
+            const cant = parseInt(fila.querySelector('.v-cantBombonaItem').value, 10) || 0;
+            const tipo = fila.querySelector('.v-tipoBombonaItem').value.trim().toUpperCase();
+
+            if (cant > 0 && tipo !== 'NO POSEE') {
+                textoResultado += `/*${cant}* ${tipo}`;
+            }
+        });
+
+        if (textoResultado.length > 0) {
+            textoResultado += "/";
+            return textoResultado;
+        }
+
+        return "NO POSEE";
     }
 
     function alternarNinguno(idNum, tipo, checkboxCambiado) {
@@ -267,7 +414,6 @@
         return "/" + seleccionados.join("/");
     }
 
-    // Actualiza opciones únicas por miembro y controla el límite máximo de 7 opciones
     function actualizarOpcionesMascotasMiembro(idMiembro) {
         const block = document.getElementById(`miembro_${idMiembro}`);
         if (!block) return;
@@ -276,7 +422,6 @@
         const btnAdd = block.querySelector('.btn-add-mascota');
         const totalFilas = selects.length;
         
-        // Recopilar qué tipos ya están seleccionados en este miembro (excluyendo 'NA')
         const seleccionadosActuales = [];
         selects.forEach(sel => {
             if (sel.value && sel.value !== 'NA') {
@@ -284,7 +429,6 @@
             }
         });
 
-        // Actualizar cada select preservando su valor actual
         selects.forEach(sel => {
             const valorActual = sel.value;
             sel.innerHTML = `<option value="NA">NA</option>`;
@@ -307,7 +451,6 @@
             }
         });
 
-        // Bloquear el botón si se alcanzó el límite máximo de 7 opciones válidas O si ya hay 7 filas creadas
         if (btnAdd) {
             if (seleccionadosActuales.length >= opcionesTiposMascotas.length || totalFilas >= opcionesTiposMascotas.length) {
                 btnAdd.disabled = true;
@@ -385,8 +528,6 @@
         if (!contenedor) return;
 
         const numFilas = contenedor.querySelectorAll('.fila-mascota').length;
-        
-        // Verificación adicional de seguridad contra el límite de 7 opciones
         if (numFilas >= opcionesTiposMascotas.length) return;
 
         const filaDiv = document.createElement('div');
@@ -403,7 +544,6 @@
         `;
 
         contenedor.appendChild(filaDiv);
-        
         const cantInput = filaDiv.querySelector('.m-cantMascotaItem');
         actualizarEstadoFilaMascota(cantInput);
     }
@@ -625,7 +765,6 @@
             </div>`;
         container.insertAdjacentHTML('beforeend', miembroHtml);
 
-        // --- LÍMITE DE FECHAS DE NACIMIENTO ---
         const hoy = new Date().toISOString().split('T')[0];
         const fechaMinima = new Date();
         fechaMinima.setFullYear(fechaMinima.getFullYear() - 120);
@@ -640,7 +779,6 @@
         actualizarEmbarazo(miembroContador);
         actualizarCNE(miembroContador);
         
-        // Inicializar la primera fila dinámica de mascotas
         agregarFilaMascota(miembroContador);
     }
 
@@ -865,13 +1003,15 @@
         };
         const filasParaExcel = [];
 
+        const bombonasFormateadas = obtenerTextoBombonasFormateado();
+
         const viviendaGlobal = {
             comunidad: document.getElementById('comunidad').value,
             torre: document.getElementById('torre').value || "N/A",
             numeroCasaApto: document.getElementById('numeroCasaApto').value,
             condicionVivienda: document.getElementById('condicionVivienda').value,
             estadoOcupante: document.getElementById('estadoOcupante').value,
-            pesoBombona: document.getElementById('pesoBombona').value,
+            pesoBombona: bombonasFormateadas,
             fechaIngreso: formatearFecha(document.getElementById('fechaIngreso').value),
         };
         datosEnvio.vivienda = viviendaGlobal;
@@ -922,7 +1062,6 @@
                 centroVotacionFinal = `${est}/${ciu}/${mun}/${par}/${nom}`;
             }
 
-            // Formatear enfermedades, beneficios y mascotas
             const enfermedadesFinal = obtenerValoresSeleccionados(block, '.chk-enfermedad');
             const beneficiosFinal = obtenerValoresSeleccionados(block, '.chk-beneficio');
             const mascotasFormateadas = obtenerTextoMascotasFormateado(block);
@@ -974,7 +1113,7 @@
                 "Deporte practicado": miembro.deportePracticado,
                 "Nivel educativo": miembro.estudioCursado,
                 "Tipo de discapacidad": miembro.tipoDiscapacidad,
-                "Necesidades especiales": miembro.necesidadesEspecial,
+                "Necesidades especiales": miembro.necesidadEspecial,
                 "Enfermedades crónicas": miembro.enfermedadesCronicas,
                 "Medicamento consumido":  miembro.medicamento,
                 "Peso de bombona": viviendaGlobal.pesoBombona,
@@ -1031,6 +1170,7 @@
     }
 
     window.onload = function() { 
+        agregarFilaBombona();
         agregarMiembro(); 
         actualizarTorres();
         
