@@ -66,6 +66,121 @@
             cursor: pointer;
         }
 
+        /* --- ESTILOS MEJORADOS PARA ALERTAS Y MODALES (TOASTS Y MODAL DINÁMICO) --- */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .custom-toast {
+            min-width: 280px;
+            max-width: 400px;
+            padding: 15px 20px;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 4.7s forwards;
+        }
+        .custom-toast.success { background-color: #28A745; }
+        .custom-toast.error { background-color: #DC3545; }
+        .custom-toast.info { background-color: #1F497D; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; visibility: hidden; }
+        }
+
+        /* Overlay y Modal Principal */
+        #custom-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        .custom-modal {
+            background: white;
+            padding: 35px 30px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+            transition: all 0.3s ease;
+        }
+
+        /* Spinner de Carga Grande */
+        .modal-icon-container {
+            min-height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .spinner {
+            width: 54px;
+            height: 54px;
+            border: 5px solid #E2E8F0;
+            border-top: 5px solid var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Palomita SVG de Éxito Animada */
+        .checkmark-svg {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 3;
+            stroke: #28A745;
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px #28A745;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s backwards;
+        }
+        .checkmark-circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 3;
+            stroke-miterlimit: 10;
+            stroke: #28A745;
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        .checkmark-check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+        @keyframes scale {
+            0%, 100% { transform: none; }
+            50% { transform: scale3d(1.1, 1.1, 1); }
+        }
+
         /* --- ADAPTACIÓN RESPONSIVA PARA MÓVILES --- */
         @media (max-width: 600px) {
             body { padding: 10px; }
@@ -76,6 +191,8 @@
             .form-group[style*="grid-column: span 3;"] > div { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important; gap: 8px !important; }
             .m-cedula { min-width: 0; }
             .checkbox-grid { grid-template-columns: 1fr; }
+            #toast-container { left: 20px; right: 20px; bottom: 10px; }
+            .custom-toast { max-width: 100%; }
         }
 
         .grid-votacion { grid-column: 1 / -1; }
@@ -83,6 +200,20 @@
     </style>
 </head>
 <body>
+
+<!-- Contenedor para Notificaciones Flotantes (Toasts) -->
+<div id="toast-container"></div>
+
+<!-- Modal de Carga / Éxito Dinámico -->
+<div id="custom-modal-overlay">
+    <div class="custom-modal">
+        <div class="modal-icon-container" id="modal-icon-container">
+            <div class="spinner"></div>
+        </div>
+        <h3 id="modal-title" style="margin: 0 0 10px 0; color: var(--primary-blue); font-size: 20px;">Procesando</h3>
+        <p id="modal-text" style="margin: 0; color: #555; font-size: 14px; line-height: 1.4;">Generando registros y enviando datos...</p>
+    </div>
+</div>
 
 <div class="container">
     <header>
@@ -216,12 +347,57 @@
         { value: "43 KG", text: "43 Kg" },
     ];
 
+    /* --- ALERTAS Y MODAL DE CARGA / COMPLETADO CON PALOMITA VERDE --- */
+    function mostrarAlerta(mensaje, tipo = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `custom-toast ${tipo}`;
+        toast.innerHTML = `<span>${mensaje}</span>`;
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 5000);
+    }
+
+    function mostrarModalCarga(titulo, texto) {
+        const overlay = document.getElementById('custom-modal-overlay');
+        const iconContainer = document.getElementById('modal-icon-container');
+        
+        // Colocar spinner
+        iconContainer.innerHTML = `<div class="spinner"></div>`;
+        document.getElementById('modal-title').style.color = 'var(--primary-blue)';
+        document.getElementById('modal-title').textContent = titulo;
+        document.getElementById('modal-text').textContent = texto;
+        
+        overlay.style.display = 'flex';
+    }
+
+    function mostrarModalCompletado(titulo, texto) {
+        const iconContainer = document.getElementById('modal-icon-container');
+        
+        // Reemplazar spinner con Palomita Verde Animada (SVG)
+        iconContainer.innerHTML = `
+            <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle" cx="26" cy="26" r="23" fill="none"/>
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+        `;
+        document.getElementById('modal-title').style.color = '#28A745';
+        document.getElementById('modal-title').textContent = titulo;
+        document.getElementById('modal-text').textContent = texto;
+    }
+
+    function ocultarModalCarga() {
+        const overlay = document.getElementById('custom-modal-overlay');
+        overlay.style.display = 'none';
+    }
+
     // Formateador en tiempo real para Días (01-31) y Meses (01-12)
     function formatearEntradaFecha(input) {
         let limpio = input.value.replace(/\D/g, '');
         let formateado = '';
 
-        // Días (01 a 31)
         if (limpio.length > 0) {
             let dia = limpio.substring(0, 2);
             if (dia.length === 2) {
@@ -232,7 +408,6 @@
             formateado += dia;
         }
 
-        // Meses (01 a 12)
         if (limpio.length > 2) {
             let mes = limpio.substring(2, 4);
             if (mes.length === 2) {
@@ -243,7 +418,6 @@
             formateado += '/' + mes;
         }
 
-        // Año (hasta 4 dígitos)
         if (limpio.length > 4) {
             let anio = limpio.substring(4, 8);
             formateado += '/' + anio;
@@ -252,7 +426,6 @@
         input.value = formateado;
     }
 
-    // Auto-corrección suave del año y fecha completa al perder el foco (onblur)
     function validarYCorregirFecha(input) {
         let valor = input.value;
         if (!valor) return;
@@ -265,7 +438,6 @@
         let anioStr = partes[2];
         const anioActual = new Date().getFullYear();
 
-        // Si escribieron el año con 2 dígitos (ej: 98 -> 1998, 05 -> 2005)
         if (anioStr.length === 2) {
             let num = parseInt(anioStr, 10);
             anioStr = (num > (anioActual % 100) ? '19' : '20') + anioStr;
@@ -273,7 +445,6 @@
 
         let anio = parseInt(anioStr, 10);
 
-        // Limitar año entre 1900 y el año actual automáticamente
         if (isNaN(anio) || anio < 1900) {
             anioStr = '1900';
         } else if (anio > anioActual) {
@@ -283,7 +454,6 @@
         input.value = `${dia}/${mes}/${anioStr}`;
     }
 
-    // Convierte formato DD/MM/YYYY a YYYY-MM-DD para operaciones internas / cálculos
     function convertirAFormatoISO(fechaStr) {
         if (!fechaStr) return "";
         const partes = fechaStr.split('/');
@@ -291,17 +461,6 @@
             return `${partes[2]}-${partes[1]}-${partes[0]}`;
         }
         return fechaStr;
-    }
-
-    // Convierte formato YYYY-MM-DD a DD/MM/YYYY si fuera necesario
-    function formatearFecha(fechaStr) {
-        if (!fechaStr) return "N/A";
-        if (fechaStr.includes('/')) return fechaStr; // Ya está formateada
-        const partes = fechaStr.split('-');
-        if (partes.length === 3) {
-            return `${partes[2]}/${partes[1]}/${partes[0]}`;
-        }
-        return fechaStr.replace(/-/g, '/');
     }
 
     function obtenerMarcaTemporal() {
@@ -1203,23 +1362,25 @@
         });
 
         if (contadorJefes === 0) {
-            alert("Error de validación: Debe registrar un 'Jefe(a) de Hogar' en el núcleo familiar.");
+            mostrarAlerta("Error: Debe registrar un 'Jefe(a) de Hogar' en el núcleo familiar.", "error");
             return;
         }
 
         if (contadorJefes > 1) {
-            alert("Error de validación: Solo puede haber UN 'Jefe(a) de Hogar' por núcleo familiar. Los demás miembros deben tener otro parentesco.");
+            mostrarAlerta("Error: Solo puede haber UN 'Jefe(a) de Hogar' por núcleo familiar.", "error");
             return;
         }
 
         if (!jefeEsMayorDeEdad) {
-            alert("Error de validación: El 'Jefe(a) de Hogar' debe ser mayor de edad (≥ 18 años).");
+            mostrarAlerta("Error: El 'Jefe(a) de Hogar' debe ser mayor de edad (≥ 18 años).", "error");
             return;
         }
 
+        // Mostrar Modal en modo Carga
+        mostrarModalCarga("Procesando Censo", "Exportando planilla Excel y guardando registros...");
+
         exportarAExcelNativo(filasParaExcel, viviendaGlobal.numeroCasaApto);
 
-        alert("Archivo Excel unificado generado. Transmitiendo registros al servidor...");
         fetch(WEB_APP_URL, {
             method: 'POST',
             mode: 'no-cors',
@@ -1227,10 +1388,16 @@
             body: JSON.stringify(datosEnvio)
         })
         .then(() => {
-            alert("¡Censo Completado con Éxito! Datos guardados en la nube y archivo Excel descargado.");
-            location.reload();
+            // Transformar Modal a Estado Completado con Palomita Verde
+            mostrarModalCompletado("¡Censo Completado!", "Los datos fueron transmitidos y el archivo Excel se ha guardado correctamente.");
+            
+            // Pausa de 3 segundos para que el usuario aprecie el estado final antes de reiniciar
+            setTimeout(() => {
+                location.reload();
+            }, 3000);
         }).catch(err => {
-            alert("Error de red. El archivo Excel local servirá como respaldo válido.");
+            ocultarModalCarga();
+            mostrarAlerta("Error de conexión. El archivo Excel servirá como respaldo local.", "error");
             console.error(err);
         });
     });
