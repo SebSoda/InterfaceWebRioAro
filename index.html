@@ -48,6 +48,23 @@
             margin-bottom: 0;
         }
 
+        /* Estilo para marcar una casilla con error */
+.input-error {
+    border-color: #DC3545 !important;
+    background-color: #FFF8F8 !important;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15) !important;
+}
+
+/* Texto de error dinámico debajo de la casilla */
+.error-message-inline {
+    color: #DC3545;
+    font-size: 11.5px;
+    font-weight: 600;
+    margin-top: 4px;
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
         .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .card-title { font-size: 18px; color: var(--primary-blue); border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-top: 0; margin-bottom: 20px; font-weight: 600; }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
@@ -378,7 +395,7 @@
             <div id="miembrosContainer"></div>
             <!-- BOTÓN MODIFICADO CON ESTILO AMARILLO LLAMATIVO Y RESPONSIVO -->
             <button type="button" class="btn btn-warning" onclick="agregarMiembro()">➕ Agregar Nuevo Miembro</button>
-            <button type="submit" class="btn btn-success">Finalizar Registro y Enviar Censo</button>
+            <button type="button" class="btn btn-success" onclick="validarYEnviarCenso()">Finalizar Registro y Enviar Censo</button>
         </div>
     </form>
 </div>
@@ -884,7 +901,10 @@
                 <div class="grid-3" style="margin-top: 15px;">
                     <div class="form-group">
                         <label>Nombre Completo</label>
-                        <input type="text" style="text-transform: uppercase;" class="m-nombre" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$" title="Ingrese nombre y apellido usando solo letras.">
+                        <input type="text" style="text-transform: uppercase;" class="m-nombre" required 
+                            oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');"
+                            pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(\s[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$" 
+                            title="Ingrese nombre y apellido usando solo letras.">
                         <small style="color: #666; font-size: 11px; margin-top: 3px;">Ejemplo: LUIS JOSE PÉREZ LOMEDA</small>
                     </div>
                                         
@@ -910,7 +930,10 @@
                     
                     <div class="form-group">
                         <label>Número de Teléfono Celular</label>
-                        <input type="tel" class="m-telefono" pattern="^(0414|0424|0412|0416|0426)\\d{7}$|^$" title="Debe ser un número celular de Venezuela válido (ej. 04141234567).">
+                        <input type="tel" class="m-telefono" maxlength="11" 
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                            pattern="^(0414|0424|0412|0416|0426)\d{7}$|^$" 
+                            title="Debe ser un número celular de Venezuela válido (ej. 04141234567).">
                         <small style="color: #666; font-size: 11px; margin-top: 3px;">Ejemplo: 04141234567</small>
                     </div>
                     
@@ -1304,182 +1327,294 @@
         });
     }
 
-    document.getElementById('censoForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const timestampGenerado = obtenerMarcaTemporal();
-        const datosEnvio = { 
-            marcaTemporal: timestampGenerado, 
-            vivienda: {}, 
-            miembros: [] 
+    // Función auxiliar para limpiar errores previos antes de validar de nuevo
+function limpiarErroresVisuales() {
+    document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+    document.querySelectorAll('.error-message-inline').forEach(el => el.remove());
+}
+
+// Función para marcar un campo específico con error y texto directo
+function marcarCampoConError(elemento, mensaje) {
+    limpiarErroresVisuales();
+    
+    elemento.classList.add('input-error');
+    elemento.focus();
+    elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    const errorSpan = document.createElement('span');
+    errorSpan.className = 'error-message-inline';
+    errorSpan.textContent = "⚠️ " + mensaje;
+    
+    // Si el elemento está dentro del grupo de cédula (que usa un flex interno),
+    // colocamos el error en el contenedor padre principal del form-group para que baje ordenado
+    if (elemento.classList.contains('m-cedula') || elemento.classList.contains('m-nacionalidad')) {
+        const formGroupParent = elemento.closest('.form-group');
+        formGroupParent.appendChild(errorSpan);
+    } else {
+        elemento.parentNode.appendChild(errorSpan);
+    }
+
+    const limpiarAlEscribir = () => {
+        elemento.classList.remove('input-error');
+        errorSpan.remove();
+        elemento.removeEventListener('input', limpiarAlEscribir);
+        elemento.removeEventListener('change', limpiarAlEscribir);
+    };
+    elemento.addEventListener('input', limpiarAlEscribir);
+    elemento.addEventListener('change', limpiarAlEscribir);
+}
+
+
+    // Reemplazamos el event listener por esta función directa que se activa con el onclick del botón
+function validarYEnviarCenso() {
+    const timestampGenerado = obtenerMarcaTemporal();
+    const datosEnvio = { 
+        marcaTemporal: timestampGenerado, 
+        vivienda: {}, 
+        miembros: [] 
+    };
+    const filasParaExcel = [];
+
+    const bombonasFormateadas = obtenerTextoBombonasFormateado();
+
+    limpiarErroresVisuales(); // Limpiamos errores anteriores
+
+    const camposVivienda = [
+        { el: document.getElementById('comunidad'), msg: "Seleccione una comunidad." },
+        { el: document.getElementById('torre'), msg: "Seleccione una torre o bloque." },
+        { el: document.getElementById('numeroCasaApto'), msg: "Ingrese el número de casa o apartamento." },
+        { el: document.getElementById('condicionVivienda'), msg: "Seleccione la condición de la vivienda." },
+        { el: document.getElementById('estadoOcupante'), msg: "Seleccione el estado del ocupante." },
+        { el: document.getElementById('fechaIngreso'), msg: "Ingrese la fecha de ingreso válida." }
+    ];
+
+    for (let campo of camposVivienda) {
+        if (!campo.el.value || campo.el.value.trim() === "") {
+            mostrarAlerta("Por favor, revise el campo señalado en rojo.", "error");
+            marcarCampoConError(campo.el, campo.msg);
+            return;
+        }
+    }
+
+    const viviendaGlobal = {
+        comunidad: document.getElementById('comunidad').value,
+        torre: document.getElementById('torre').value || "N/A",
+        numeroCasaApto: document.getElementById('numeroCasaApto').value,
+        condicionVivienda: document.getElementById('condicionVivienda').value,
+        estadoOcupante: document.getElementById('estadoOcupante').value,
+        pesoBombona: bombonasFormateadas,
+        fechaIngreso: document.getElementById('fechaIngreso').value,
+    };
+    datosEnvio.vivienda = viviendaGlobal;
+
+    const bloques = document.querySelectorAll('.miembro-block');
+    let contadorJefes = 0;
+    let jefeEsMayorDeEdad = false;
+    
+    let errorEncontrado = false;
+    let mensajeError = "";
+
+    // 2. Validar miembros de forma secuencial con enfoque automático
+    bloques.forEach(block => {
+        if (errorEncontrado) return; // Si ya atrapamos un error previo, detenemos el bucle
+
+        const nombre = block.querySelector('.m-nombre');
+        const fechaNac = block.querySelector('.m-fechaNac');
+        const nacionalidad = block.querySelector('.m-nacionalidad');
+        const cedula = block.querySelector('.m-cedula');
+        const genero = block.querySelector('.m-genero');
+        const parentesco = block.querySelector('.m-parentesco');
+        const civil = block.querySelector('.m-civil');
+        const estudio = block.querySelector('.m-estudio');
+
+        if (!nombre.value.trim()) {
+            mostrarAlerta("Por favor, revise el campo señalado en rojo.", "error");
+            marcarCampoConError(nombre, "Ingrese el nombre completo del familiar.");
+            errorEncontrado = true;
+            return;
+        }
+        if (!fechaNac.value.trim() || fechaNac.value.length < 10) {
+            mostrarAlerta("Por favor, revise el campo señalado en rojo.", "error");
+            marcarCampoConError(fechaNac, "Ingrese una fecha de nacimiento válida (DD/MM/AAAA).");
+            errorEncontrado = true;
+            return;
+        }
+        if (!cedula.disabled && !cedula.value.trim()) {
+            mostrarAlerta("Por favor, revise el campo señalado en rojo.", "error");
+            marcarCampoConError(cedula, "Ingrese el número de cédula de identidad.");
+            errorEncontrado = true;
+            return;
+        }
+        if (!genero.value) {
+            mostrarAlerta("Por favor, revise el campo señalado en rojo.", "error");
+            marcarCampoConError(genero, "Seleccione el género biológico.");
+            errorEncontrado = true;
+            return;
+        }
+        if (!parentesco.value) {
+            mostrarAlerta("Por favor, revise el campo señalado en rojo.", "error");
+            marcarCampoConError(parentesco, "Seleccione el parentesco con respecto al jefe de hogar.");
+            errorEncontrado = true;
+            return;
+        }
+        if (!civil.value) {
+            mostrarAlerta("Por favor, revise el campo señalado en rojo.", "error");
+            marcarCampoConError(civil, "Seleccione el estado civil.");
+            errorEncontrado = true;
+            return;
+        }
+        if (!estudio.value) {
+            mostrarAlerta("Por favor, revise el campo señalado en rojo.", "error");
+            marcarCampoConError(estudio, "Seleccione el nivel educativo.");
+            errorEncontrado = true;
+            return;
+        }
+
+        // Cálculo de edad para validar al Jefe(a) de Hogar
+        let edad = 0;
+        const fechaIso = convertirAFormatoISO(fechaNac.value);
+        const nac = new Date(fechaIso + 'T00:00:00');
+        const hoy = new Date();
+        edad = hoy.getFullYear() - nac.getFullYear();
+        const m = hoy.getMonth() - nac.getMonth();
+        if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) { edad--; }
+
+        if (parentesco.value === "JEFE/A DE FAMILIA") {
+            contadorJefes++;
+            if (edad >= 18) {
+                jefeEsMayorDeEdad = true;
+            }
+        }
+    });
+
+    // Si se encontró algún error en los campos de los familiares, cortamos el proceso aquí
+    if (errorEncontrado) {
+        return;
+    }
+
+    if (contadorJefes === 0) {
+        mostrarAlerta("Error: Debe registrar un 'Jefe(a) de Hogar' en el núcleo familiar.", "error");
+        return;
+    }
+
+    if (contadorJefes > 1) {
+        mostrarAlerta("Error: Solo puede haber UN 'Jefe(a) de Hogar' por núcleo familiar.", "error");
+        return;
+    }
+
+    if (!jefeEsMayorDeEdad) {
+        mostrarAlerta("Error: El 'Jefe(a) de Hogar' debe ser mayor de edad (≥ 18 años).", "error");
+        return;
+    }
+
+    // 3. Si todo está correcto, procesamos los datos y enviamos
+    bloques.forEach(block => {
+        const fechaNacRaw = block.querySelector('.m-fechaNac').value;
+        let edad = 0;
+        if (fechaNacRaw && fechaNacRaw.length === 10) {
+            const fechaIso = convertirAFormatoISO(fechaNacRaw);
+            const nac = new Date(fechaIso + 'T00:00:00');
+            const hoy = new Date();
+            edad = hoy.getFullYear() - nac.getFullYear();
+            const m = hoy.getMonth() - nac.getMonth();
+            if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) { edad--; }
+        }
+
+        const nacionalidad = block.querySelector('.m-nacionalidad').value;
+        let cedulaIngresada = block.querySelector('.m-cedula').value.trim();
+        let cedulaFinal = edad < 9 ? generarIdMenor(viviendaGlobal.comunidad, viviendaGlobal.torre, viviendaGlobal.numeroCasaApto, fechaNacRaw) : `${nacionalidad}${cedulaIngresada}`;
+
+        const cneInscrito = block.querySelector('.m-cne').checked;
+        const est = block.querySelector('.m-v-estado').value.trim().toUpperCase() || "NA";
+        const ciu = block.querySelector('.m-v-ciudad').value.trim().toUpperCase() || "NA";
+        const mun = block.querySelector('.m-v-Municipio').value.trim().toUpperCase() || "NA";
+        const par = block.querySelector('.m-v-parroquia').value.trim().toUpperCase() || "NA";
+        const nom = block.querySelector('.m-v-nombre').value.trim().toUpperCase() || "NA";
+
+        let centroVotacionFinal = (edad >= 15 && cneInscrito) ? `${est}/${ciu}/${mun}/${par}/${nom}` : "NA";
+
+        const miembro = {
+            nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
+            fechaNacimiento: fechaNacRaw,
+            edad: edad,
+            cedulaIdentidad: cedulaFinal,
+            telefonoCelular: block.querySelector('.m-telefono').value || "N/A",
+            correoElectronico: block.querySelector('.m-correo').value || "N/A",
+            generoBiologico: block.querySelector('.m-genero').value,
+            parentesco: block.querySelector('.m-parentesco').value,
+            estadoCivil: block.querySelector('.m-civil').value,
+            embarazadas: block.querySelector('.m-embarazo').value,
+            lactantes: block.querySelector('.m-lactante').value,
+            profesion: block.querySelector('.m-profesion').value.toUpperCase(),
+            ocupacion: block.querySelector('.m-ocupacion').value.toUpperCase(),
+            Empresa: block.querySelector('.m-empresa').value.toUpperCase(),
+            deportePracticado: block.querySelector('.m-deporte').value.toUpperCase(),
+            estudioCursado: block.querySelector('.m-estudio').value,
+            tipoDiscapacidad: block.querySelector('.m-discapacidad').value.toUpperCase(),
+            necesidadEspecial: block.querySelector('.m-necesidadEspecial').value.toUpperCase(),
+            enfermedadesCronicas: obtenerValoresSeleccionados(block, '.chk-enfermedad'),
+            medicamento: block.querySelector('.m-medicamento').value.toUpperCase(),
+            centroVotacion: centroVotacionFinal,
+            beneficios: obtenerValoresSeleccionados(block, '.chk-beneficio'),
+            tipoMascota: obtenerTextoMascotasFormateado(block)
         };
-        const filasParaExcel = [];
 
-        const bombonasFormateadas = obtenerTextoBombonasFormateado();
+        datosEnvio.miembros.push(miembro);
 
-        const viviendaGlobal = {
-            comunidad: document.getElementById('comunidad').value,
-            torre: document.getElementById('torre').value || "N/A",
-            numeroCasaApto: document.getElementById('numeroCasaApto').value,
-            condicionVivienda: document.getElementById('condicionVivienda').value,
-            estadoOcupante: document.getElementById('estadoOcupante').value,
-            pesoBombona: bombonasFormateadas,
-            fechaIngreso: document.getElementById('fechaIngreso').value,
-        };
-        datosEnvio.vivienda = viviendaGlobal;
-
-        const bloques = document.querySelectorAll('.miembro-block');
-        let contadorJefes = 0;
-        let jefeEsMayorDeEdad = false;
-
-        bloques.forEach(block => {
-            const parentesco = block.querySelector('.m-parentesco').value;
-            const fechaNacRaw = block.querySelector('.m-fechaNac').value;
-            
-            let edad = 0;
-            if (fechaNacRaw && fechaNacRaw.length === 10) {
-                const fechaIso = convertirAFormatoISO(fechaNacRaw);
-                const nac = new Date(fechaIso + 'T00:00:00');
-                const hoy = new Date();
-                edad = hoy.getFullYear() - nac.getFullYear();
-                const m = hoy.getMonth() - nac.getMonth();
-                if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) { edad--; }
-            }
-
-            if (parentesco === "JEFE/A DE FAMILIA") {
-                contadorJefes++;
-                if (edad >= 18) {
-                    jefeEsMayorDeEdad = true;
-                }
-            }
-
-            const nacionalidad = block.querySelector('.m-nacionalidad').value;
-            let cedulaIngresada = block.querySelector('.m-cedula').value.trim();
-
-            let cedulaFinal = "";
-            if (edad < 9) {
-                cedulaFinal = generarIdMenor(viviendaGlobal.comunidad, viviendaGlobal.torre, viviendaGlobal.numeroCasaApto, fechaNacRaw);
-            } else {
-                cedulaFinal = `${nacionalidad}${cedulaIngresada}`;
-            }
-
-            const cneInscrito = block.querySelector('.m-cne').checked;
-            const est = block.querySelector('.m-v-estado').value.trim().toUpperCase() || "NA";
-            const ciu = block.querySelector('.m-v-ciudad').value.trim().toUpperCase() || "NA";
-            const mun = block.querySelector('.m-v-Municipio').value.trim().toUpperCase() || "NA";
-            const par = block.querySelector('.m-v-parroquia').value.trim().toUpperCase() || "NA";
-            const nom = block.querySelector('.m-v-nombre').value.trim().toUpperCase() || "NA";
-
-            let centroVotacionFinal = "NA";
-            if (edad >= 15 && cneInscrito) {
-                centroVotacionFinal = `${est}/${ciu}/${mun}/${par}/${nom}`;
-            }
-
-            const enfermedadesFinal = obtenerValoresSeleccionados(block, '.chk-enfermedad');
-            const beneficiosFinal = obtenerValoresSeleccionados(block, '.chk-beneficio');
-            const mascotasFormateadas = obtenerTextoMascotasFormateado(block);
-
-
-            const miembro = {
-                nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
-                fechaNacimiento: fechaNacRaw,
-                edad: edad,
-                cedulaIdentidad: cedulaFinal,
-                telefonoCelular: block.querySelector('.m-telefono').value || "N/A",
-                correoElectronico: block.querySelector('.m-correo').value || "N/A",
-                generoBiologico: block.querySelector('.m-genero').value,
-                parentesco: parentesco,
-                estadoCivil: block.querySelector('.m-civil').value,
-                embarazadas: block.querySelector('.m-embarazo').value,
-                lactantes: block.querySelector('.m-lactante').value,
-                profesion: block.querySelector('.m-profesion').value.toUpperCase(),
-                ocupacion: block.querySelector('.m-ocupacion').value.toUpperCase(),
-                Empresa: block.querySelector('.m-empresa').value.toUpperCase(),
-                deportePracticado: block.querySelector('.m-deporte').value.toUpperCase(),
-                estudioCursado: block.querySelector('.m-estudio').value,
-                tipoDiscapacidad: block.querySelector('.m-discapacidad').value.toUpperCase(),
-                necesidadEspecial: block.querySelector('.m-necesidadEspecial').value.toUpperCase(),
-                enfermedadesCronicas: enfermedadesFinal,
-                medicamento: block.querySelector('.m-medicamento').value.toUpperCase(),
-                centroVotacion: centroVotacionFinal,
-                beneficios: beneficiosFinal,
-                tipoMascota: mascotasFormateadas
-            };
-
-            datosEnvio.miembros.push(miembro);
-
-            filasParaExcel.push({
-                "Marca temporal": timestampGenerado,
-                "Nombre completo": miembro.nombreCompleto,
-                "Cedula de identidad": miembro.cedulaIdentidad,
-                "Fecha de nacimiento": miembro.fechaNacimiento,
-                "Edad": miembro.edad,
-                "Genero Biológico": miembro.generoBiologico,
-                "Estado civil": miembro.estadoCivil,
-                "Parentesco": miembro.parentesco,
-                "¿Embarazada?": miembro.embarazadas,
-                "¿Lactante 0 - 11 meses?": miembro.lactantes,
-                "Numero de teléfono celular": miembro.telefonoCelular,
-                "Correo electrónico": miembro.correoElectronico,
-                "Profesión": miembro.profesion,
-                "Ocupación": miembro.ocupacion,
-                "Empresa": miembro.Empresa,
-                "Deporte practicado": miembro.deportePracticado,
-                "Nivel educativo": miembro.estudioCursado,
-                "Tipo de discapacidad": miembro.tipoDiscapacidad,
-                "Necesidades especiales": miembro.necesidadEspecial,
-                "Enfermedades crónicas": miembro.enfermedadesCronicas,
-                "Medicamento consumido":  miembro.medicamento,
-                "Peso de bombona": viviendaGlobal.pesoBombona,
-                "Ubicación de centro Votación": miembro.centroVotacion,
-                "Fecha de ingreso": viviendaGlobal.fechaIngreso,
-                "Estado de ocupante": viviendaGlobal.estadoOcupante,
-                "Comunidad": viviendaGlobal.comunidad,
-                "Torre": viviendaGlobal.torre,
-                "Numero de Casa / Apto": viviendaGlobal.numeroCasaApto,
-                "Condición de Vivienda": viviendaGlobal.condicionVivienda,
-                "Beneficios": miembro.beneficios,
-                "Tipo de mascota": mascotasFormateadas
-            });
-        });
-
-        if (contadorJefes === 0) {
-            mostrarAlerta("Error: Debe registrar un 'Jefe(a) de Hogar' en el núcleo familiar.", "error");
-            return;
-        }
-
-        if (contadorJefes > 1) {
-            mostrarAlerta("Error: Solo puede haber UN 'Jefe(a) de Hogar' por núcleo familiar.", "error");
-            return;
-        }
-
-        if (!jefeEsMayorDeEdad) {
-            mostrarAlerta("Error: El 'Jefe(a) de Hogar' debe ser mayor de edad (≥ 18 años).", "error");
-            return;
-        }
-
-        mostrarModalCarga("Procesando Censo", "Exportando planilla Excel y guardando registros...");
-
-        exportarAExcelNativo(filasParaExcel, viviendaGlobal.numeroCasaApto);
-
-        fetch(WEB_APP_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datosEnvio)
-        })
-        .then(() => {
-            mostrarModalCompletado("¡Censo Completado!", "Los datos fueron transmitidos y el archivo Excel se ha guardado correctamente.");
-            
-            setTimeout(() => {
-                location.reload();
-            }, 3000);
-        }).catch(err => {
-            ocultarModalCarga();
-            mostrarAlerta("Error de conexión. El archivo Excel servirá como respaldo local.", "error");
-            console.error(err);
+        filasParaExcel.push({
+            "Marca temporal": timestampGenerado,
+            "Nombre completo": miembro.nombreCompleto,
+            "Cedula de identidad": miembro.cedulaIdentidad,
+            "Fecha de nacimiento": miembro.fechaNacimiento,
+            "Edad": miembro.edad,
+            "Genero Biológico": miembro.generoBiologico,
+            "Estado civil": miembro.estadoCivil,
+            "Parentesco": miembro.parentesco,
+            "¿Embarazada?": miembro.embarazadas,
+            "¿Lactante 0 - 11 meses?": miembro.lactantes,
+            "Numero de teléfono celular": miembro.telefonoCelular,
+            "Correo electrónico": miembro.correoElectronico,
+            "Profesión": miembro.profesion,
+            "Ocupación": miembro.ocupacion,
+            "Empresa": miembro.Empresa,
+            "Deporte practicado": miembro.deportePracticado,
+            "Nivel educativo": miembro.estudioCursado,
+            "Tipo de discapacidad": miembro.tipoDiscapacidad,
+            "Necesidades especiales": miembro.necesidadEspecial,
+            "Enfermedades crónicas": miembro.enfermedadesCronicas,
+            "Medicamento consumido": miembro.medicamento,
+            "Peso de bombona": viviendaGlobal.pesoBombona,
+            "Ubicación de centro Votación": miembro.centroVotacion,
+            "Fecha de ingreso": viviendaGlobal.fechaIngreso,
+            "Estado de ocupante": viviendaGlobal.estadoOcupante,
+            "Comunidad": viviendaGlobal.comunidad,
+            "Torre": viviendaGlobal.torre,
+            "Numero de Casa / Apto": viviendaGlobal.numeroCasaApto,
+            "Condición de Vivienda": viviendaGlobal.condicionVivienda,
+            "Beneficios": miembro.beneficios,
+            "Tipo de mascota": miembro.tipoMascota
         });
     });
+
+    mostrarModalCarga("Procesando Censo", "Exportando planilla Excel y guardando registros...");
+
+    exportarAExcelNativo(filasParaExcel, viviendaGlobal.numeroCasaApto);
+
+    fetch(WEB_APP_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datosEnvio)
+    })
+    .then(() => {
+        mostrarModalCompletado("¡Censo Completado!", "Los datos fueron transmitidos y el archivo Excel se ha guardado correctamente.");
+        setTimeout(() => { location.reload(); }, 3000);
+    }).catch(err => {
+        ocultarModalCarga();
+        mostrarAlerta("Error de conexión. El archivo Excel servirá como respaldo local.", "error");
+        console.error(err);
+    });
+}
 
     function exportarAExcelNativo(datosFilas, numeroCasa) {
         const wb = XLSX.utils.book_new();
