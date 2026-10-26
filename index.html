@@ -325,10 +325,14 @@
                 <option value="UNICA">Conjunto Yocoima</option>
             </select>
         </div>
+
         <div class="form-group">
             <label>Número de Casa / Apto</label>
-            <input type="text" id="numeroCasaApto" style="text-transform: uppercase;" required pattern="^(?:PB-[1-4]|[123]-[1-4]|A[1-6]|B[1-5]|C[1-5]|D[1-35]|E[1-6]|0[1-3]|F[1-5]|G[1-6]|G1-A|G6A|H[1-5]|I[1-6]|J[1-5]|K[1-5]|L[1-4]|M[1-5]|N[1-4]|30-A[12]?|5-A[134]|9-A1|13-A|18-A|20-A2|23-A|25-A|33-A|38-A|41-A1|7-B|8-A|10-A|[1-9]|[1-4][0-9]|5[0-8])$" title="Ingrese un número de casa o apartamento válido" placeholder="Ej: A1, 10, PB-1">
+            <!-- Quitamos el placeholder y agregamos un subtítulo de ayuda -->
+            <input type="text" id="numeroCasaApto" style="text-transform: uppercase;" required pattern="^(?:PB-[1-4]|[123]-[1-4]|A[1-6]|B[1-5]|C[1-5]|D[1-35]|E[1-6]|0[1-3]|F[1-5]|G[1-6]|G1-A|G6A|H[1-5]|I[1-6]|J[1-5]|K[1-5]|L[1-4]|M[1-5]|N[1-4]|30-A[12]?|5-A[134]|9-A1|13-A|18-A|20-A2|23-A|25-A|33-A|38-A|41-A1|7-B|8-A|10-A|[1-9]|[1-4][0-9]|5[0-8])$" title="Ingrese un número de casa o apartamento válido">
+            <small style="color: #666; font-size: 11px; margin-top: 3px;">Ejemplo: A1, 10, PB-1</small>
         </div>
+
         <div class="form-group">
             <label>Condición de la Vivienda</label>
             <select id="condicionVivienda" required>
@@ -880,9 +884,10 @@
                 <div class="grid-3" style="margin-top: 15px;">
                     <div class="form-group">
                         <label>Nombre Completo</label>
-                        <input type="text" style="text-transform: uppercase;" class="m-nombre" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$" title="Ingrese nombre y apellido usando solo letras." placeholder="Ej: Juan Pérez">
+                        <input type="text" style="text-transform: uppercase;" class="m-nombre" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$" title="Ingrese nombre y apellido usando solo letras.">
+                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Ejemplo: LUIS JOSE PÉREZ LOMEDA</small>
                     </div>
-                    
+                                        
                     <div class="form-group">
                         <label>Fecha de Nacimiento (DD/MM/AAAA)</label>
                         <input type="text" class="m-fechaNac" placeholder="DD/MM/AAAA" maxlength="10" required oninput="formatearEntradaFecha(this)" onblur="validarYCorregirFecha(this); calcularEdadYValidarId(${miembroContador})">
@@ -897,20 +902,22 @@
                             </select>
                             <input type="text" class="m-cedula" style="flex: 1;" required 
                                 pattern="^[0-9]{6,8}$|^MENOR S/C$" 
-                                placeholder="Ej: 25123456" 
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                                title="Ingrese entre 6 y 8 dígitos numéricos sin letras ni puntos. Para menores se asignará 'MENOR S/C' automáticamente.">
+                                title="Ingrese entre 6 y 8 dígitos numéricos sin letras ni puntos.">
                         </div>
+                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Ejemplo: 25123456</small>
                     </div>
                     
                     <div class="form-group">
                         <label>Número de Teléfono Celular</label>
-                        <input type="tel" class="m-telefono" value="NA" pattern="^(0414|0424|0412|0416|0426)\\d{7}$|^NA$" title="Debe ser un número celular de Venezuela válido (ej. 04141234567).">
+                        <input type="tel" class="m-telefono" pattern="^(0414|0424|0412|0416|0426)\\d{7}$|^$" title="Debe ser un número celular de Venezuela válido (ej. 04141234567).">
+                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Ejemplo: 04141234567</small>
                     </div>
                     
                     <div class="form-group">
                         <label>Correo Electrónico</label>
-                        <input type="text" class="m-correo" value="NA" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$|^NA$" title="Ingrese un correo electrónico válido.">
+                        <input type="text" class="m-correo" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$|^$" title="Ingrese un correo electrónico válido.">
+                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Ejemplo: usuario@gmail.com</small>
                     </div>
                     
                     <div class="form-group">
@@ -970,22 +977,26 @@
                     
                     <div class="form-group">
                         <label>Profesión</label>
-                        <input type="text" style="text-transform: uppercase;" class="m-profesion" value="NA" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$|^NA$" title="Solo letras y espacios.">
+                        <input type="text" style="text-transform: uppercase;" class="m-profesion" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$|^$" title="Solo letras y espacios.">
+                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
                     
                     <div class="form-group">
                         <label>Ocupación</label>
-                        <input type="text" style="text-transform: uppercase;" class="m-ocupacion" value="NA" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$|^NA$" title="Solo letras y espacios.">
+                        <input type="text" style="text-transform: uppercase;" class="m-ocupacion" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$|^$" title="Solo letras y espacios.">
+                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
 
                     <div class="form-group">
                         <label>Empresa</label>
-                        <input type="text" style="text-transform: uppercase;" class="m-empresa" value="NA" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^NA$" title="Solo letras, números y signos comunes.">
+                        <input type="text" style="text-transform: uppercase;" class="m-empresa" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^$" title="Solo letras, números y signos comunes.">
+                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
                     
                     <div class="form-group">
                         <label>Deporte Practicado</label>
-                        <input type="text" style="text-transform: uppercase;" class="m-deporte" value="NA" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$|^NA$" title="Solo letras y espacios.">
+                        <input type="text" style="text-transform: uppercase;" class="m-deporte" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$|^$" title="Solo letras y espacios.">
+                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
                     
                     <div class="form-group">
@@ -1008,17 +1019,20 @@
                     
                     <div class="form-group">
                         <label>Discapacidad</label>
-                        <input type="text" style="text-transform: uppercase;" class="m-discapacidad" value="NA" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^NA$" title="Solo letras, números y signos comunes.">
+                        <input type="text" style="text-transform: uppercase;" class="m-discapacidad" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^$" title="Solo letras, números y signos comunes.">
+                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
                     
                     <div class="form-group">
                         <label>Necesidad Especial</label>
-                        <input type="text" style="text-transform: uppercase;" class="m-necesidadEspecial" value="NA" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^NA$" title="Solo letras, números y signos comunes.">
+                        <input type="text" style="text-transform: uppercase;" class="m-necesidadEspecial" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^$" title="Solo letras, números y signos comunes.">
+                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
 
                     <div class="form-group">
                         <label>Medicamento</label>
-                        <input type="text" style="text-transform: uppercase;" class="m-medicamento" value="NA" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^NA$" title="Solo letras, números y signos comunes.">
+                        <input type="text" style="text-transform: uppercase;" class="m-medicamento" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^$" title="Solo letras, números y signos comunes.">
+                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
 
                     <div class="checkbox-group-container">
@@ -1364,6 +1378,7 @@
             const enfermedadesFinal = obtenerValoresSeleccionados(block, '.chk-enfermedad');
             const beneficiosFinal = obtenerValoresSeleccionados(block, '.chk-beneficio');
             const mascotasFormateadas = obtenerTextoMascotasFormateado(block);
+
 
             const miembro = {
                 nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
