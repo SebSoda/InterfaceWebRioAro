@@ -10,16 +10,47 @@
             --primary-blue: #1F497D; --secondary-blue: #2C5E9E; --light-bg: #F4F7FA;
             --card-bg: #FFFFFF; --text-dark: #333333; --border-color: #DCE6F1; --accent-green: #28A745;
             --accent-yellow: #FFC107; --accent-yellow-hover: #FFB300;
+            --info-bg: #EBF3FA; --input-bg: #FFFFFF; --input-border: #BACCDD; --input-text: #333333;
+            --miembro-bg: #F8FAFC; --disabled-bg: #E9ECEF; --disabled-color: #495057;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light-bg); color: var(--text-dark); margin: 0; padding: 20px; }
+
+        /* ESTILOS AÑADIDOS PARA MODO OSCURO */
+        [data-theme="dark"] {
+            --primary-blue: #3A78BE; --secondary-blue: #5C8ED6; --light-bg: #121820;
+            --card-bg: #1A222D; --text-dark: #E2E8F0; --border-color: #2D3748; --accent-green: #2ECC71;
+            --accent-yellow: #F1C40F; --accent-yellow-hover: #D4AC0D;
+            --info-bg: #1E2D3D; --input-bg: #222D3D; --input-border: #4A5568; --input-text: #F7FAFC;
+            --miembro-bg: #222C3B; --disabled-bg: #2D3748; --disabled-color: #A0AEC0;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light-bg); color: var(--text-dark); margin: 0; padding: 20px; transition: background-color 0.3s ease, color 0.3s ease; }
         .container { max-width: 1000px; margin: 0 auto; }
-        header { background-color: var(--primary-blue); color: white; padding: 25px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        header { background-color: var(--primary-blue); color: white; padding: 25px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; position: relative; }
         header h1 { margin: 0; font-size: 24px; letter-spacing: 0.5px; }
         header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
 
+        /* Botón de alternancia de Modo Oscuro */
+        .theme-toggle-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .theme-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
         /* TARJETA INFORMATIVA / INSTRUCCIONES */
         .info-card {
-            background-color: #EBF3FA;
+            background-color: var(--info-bg);
             border-left: 5px solid var(--secondary-blue);
             border-radius: 6px;
             padding: 18px 20px;
@@ -38,7 +69,7 @@
             margin: 0;
             padding-left: 20px;
             font-size: 13.5px;
-            color: #333333;
+            color: var(--text-dark);
             line-height: 1.5;
         }
         .info-card li {
@@ -65,15 +96,15 @@
     animation: fadeIn 0.2s ease;
 }
 
-        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background 0.3s, border-color 0.3s; }
         .card-title { font-size: 18px; color: var(--primary-blue); border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-top: 0; margin-bottom: 20px; font-weight: 600; }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #555; }
-        .form-group input, .form-group select { padding: 10px; border: 1px solid #BACCDD; border-radius: 4px; font-size: 14px; background-color: #FFF; transition: border-color 0.2s; }
+        .form-group label { font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-dark); }
+        .form-group input, .form-group select { padding: 10px; border: 1px solid var(--input-border); border-radius: 4px; font-size: 14px; background-color: var(--input-bg); color: var(--input-text); transition: border-color 0.2s, background-color 0.3s, color 0.3s; }
         .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--secondary-blue); }
-        .form-group input:disabled { background-color: #E9ECEF; color: #495057; font-weight: bold; }
-        .miembro-block { border-left: 4px solid var(--secondary-blue); background: #F8FAFC; padding: 15px; margin-bottom: 15px; border-radius: 0 6px 6px 0; }
+        .form-group input:disabled { background-color: var(--disabled-bg); color: var(--disabled-color); font-weight: bold; }
+        .miembro-block { border-left: 4px solid var(--secondary-blue); background: var(--miembro-bg); padding: 15px; margin-bottom: 15px; border-radius: 0 6px 6px 0; transition: background 0.3s; }
         .btn { padding: 12px 20px; border: none; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; transition: background-color 0.2s, transform 0.1s; }
         .btn-primary { background-color: var(--primary-blue); color: white; }
         .btn-primary:hover { background-color: var(--secondary-blue); }
@@ -101,15 +132,16 @@
         /* Estilos para contenedores de Selección Múltiple */
         .checkbox-group-container {
             grid-column: 1 / -1;
-            background: #ffffff;
-            border: 1px solid #BACCDD;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
             border-radius: 6px;
             padding: 12px;
+            transition: background 0.3s, border-color 0.3s;
         }
         .checkbox-group-title {
             font-size: 13px;
             font-weight: 600;
-            color: #555;
+            color: var(--text-dark);
             margin-bottom: 8px;
             display: block;
         }
@@ -123,7 +155,7 @@
             align-items: center;
             gap: 8px;
             font-size: 13px;
-            color: #333;
+            color: var(--text-dark);
             cursor: pointer;
         }
         .checkbox-item input[type="checkbox"] {
@@ -180,7 +212,8 @@
             z-index: 10000;
         }
         .custom-modal {
-            background: white;
+            background: var(--card-bg);
+            color: var(--text-dark);
             padding: 35px 30px;
             border-radius: 12px;
             text-align: center;
@@ -201,7 +234,7 @@
         .spinner {
             width: 54px;
             height: 54px;
-            border: 5px solid #E2E8F0;
+            border: 5px solid var(--border-color);
             border-top: 5px solid var(--primary-blue);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
@@ -259,6 +292,7 @@
             .checkbox-grid { grid-template-columns: 1fr; }
             #toast-container { left: 20px; right: 20px; bottom: 10px; }
             .custom-toast { max-width: 100%; }
+            .theme-toggle-btn { position: relative; top: 0; right: 0; margin-top: 10px; width: 100%; }
         }
 
         .grid-votacion { grid-column: 1 / -1;}
@@ -277,12 +311,13 @@
             <div class="spinner"></div>
         </div>
         <h3 id="modal-title" style="margin: 0 0 10px 0; color: var(--primary-blue); font-size: 20px;">Procesando</h3>
-        <p id="modal-text" style="margin: 0; color: #555; font-size: 14px; line-height: 1.4;">Generando registros y enviando datos...</p>
+        <p id="modal-text" style="margin: 0; color: var(--text-dark); opacity: 0.8; font-size: 14px; line-height: 1.4;">Generando registros y enviando datos...</p>
     </div>
 </div>
 
 <div class="container">
     <header>
+        <button type="button" class="theme-toggle-btn" id="themeToggleBtn" onclick="alternarModoOscuro()">🌙 Modo Oscuro</button>
         <h1>SISTEMA DE CENSADO AUTOMATIZADO</h1>
         <p>Octava Estrella de Guayana • Registro de Núcleo Familiar</p>
     </header>
@@ -347,7 +382,7 @@
             <label>Número de Casa / Apto</label>
             <!-- Quitamos el placeholder y agregamos un subtítulo de ayuda -->
             <input type="text" id="numeroCasaApto" style="text-transform: uppercase;" required pattern="^(?:PB-[1-4]|[123]-[1-4]|A[1-6]|B[1-5]|C[1-5]|D[1-35]|E[1-6]|0[1-3]|F[1-5]|G[1-6]|G1-A|G6A|H[1-5]|I[1-6]|J[1-5]|K[1-5]|L[1-4]|M[1-5]|N[1-4]|30-A[12]?|5-A[134]|9-A1|13-A|18-A|20-A2|23-A|25-A|33-A|38-A|41-A1|7-B|8-A|10-A|[1-9]|[1-4][0-9]|5[0-8])$" title="Ingrese un número de casa o apartamento válido">
-            <small style="color: #666; font-size: 11px; margin-top: 3px;">Ejemplo: A1, 10, PB-1</small>
+            <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: A1, 10, PB-1</small>
         </div>
 
         <div class="form-group">
@@ -373,7 +408,7 @@
                 <!-- CASILLA DINÁMICA DE BOMBONA DE GAS -->
                 <div class="form-group grid-votacion" style="margin-top: 5px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <label style="font-weight: 600; font-size: 13px; color: #555; margin: 0;">Bombonas de Gas de la Vivienda</label>
+                        <label style="font-weight: 600; font-size: 13px; margin: 0;">Bombonas de Gas de la Vivienda</label>
                         <button type="button" class="btn btn-primary btn-add-bombona" style="padding: 4px 10px; font-size: 13px;" onclick="agregarFilaBombona()">+ Añadir Bombona</button>
                     </div>
                     <div id="contenedorBombonas" style="display: flex; flex-direction: column; gap: 8px;">
@@ -431,6 +466,33 @@
         { value: "18 KG", text: "18 Kg" },
         { value: "43 KG", text: "43 Kg" },
     ];
+
+    /* --- LÓGICA DE MODO OSCURO --- */
+    function inicializarModoOscuro() {
+        const savedTheme = localStorage.getItem('theme');
+        const btn = document.getElementById('themeToggleBtn');
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            if (btn) btn.innerHTML = '☀️ Modo Claro';
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            if (btn) btn.innerHTML = '🌙 Modo Oscuro';
+        }
+    }
+
+    function alternarModoOscuro() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const btn = document.getElementById('themeToggleBtn');
+        if (currentTheme === 'dark') {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+            if (btn) btn.innerHTML = '🌙 Modo Oscuro';
+        } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            if (btn) btn.innerHTML = '☀️ Modo Claro';
+        }
+    }
 
     /* --- ALERTAS Y MODAL DE CARGA / COMPLETADO CON PALOMITA VERDE --- */
     function mostrarAlerta(mensaje, tipo = 'success') {
@@ -902,10 +964,10 @@
                     <div class="form-group">
                         <label>Nombre Completo</label>
                         <input type="text" style="text-transform: uppercase;" class="m-nombre" required 
-                            oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');"
-                            pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(\s[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$" 
+                            oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]/g, '');"
+                            pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
                             title="Ingrese nombre y apellido usando solo letras.">
-                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Ejemplo: LUIS JOSE PÉREZ LOMEDA</small>
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: LUIS JOSE PÉREZ LOMEDA</small>
                     </div>
                                         
                     <div class="form-group">
@@ -925,7 +987,7 @@
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                                 title="Ingrese entre 6 y 8 dígitos numéricos sin letras ni puntos.">
                         </div>
-                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Ejemplo: 25123456</small>
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: 25123456</small>
                     </div>
                     
                     <div class="form-group">
@@ -934,13 +996,13 @@
                             oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                             pattern="^(0414|0424|0412|0416|0426)\d{7}$|^$" 
                             title="Debe ser un número celular de Venezuela válido (ej. 04141234567).">
-                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Ejemplo: 04141234567</small>
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: 04141234567</small>
                     </div>
                     
                     <div class="form-group">
                         <label>Correo Electrónico</label>
                         <input type="text" class="m-correo" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$|^$" title="Ingrese un correo electrónico válido.">
-                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Ejemplo: usuario@gmail.com</small>
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: usuario@gmail.com</small>
                     </div>
                     
                     <div class="form-group">
@@ -1001,25 +1063,25 @@
                     <div class="form-group">
                         <label>Profesión</label>
                         <input type="text" style="text-transform: uppercase;" class="m-profesion" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$|^$" title="Solo letras y espacios.">
-                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
                     
                     <div class="form-group">
                         <label>Ocupación</label>
                         <input type="text" style="text-transform: uppercase;" class="m-ocupacion" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$|^$" title="Solo letras y espacios.">
-                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
 
                     <div class="form-group">
                         <label>Empresa</label>
                         <input type="text" style="text-transform: uppercase;" class="m-empresa" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^$" title="Solo letras, números y signos comunes.">
-                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
                     
                     <div class="form-group">
                         <label>Deporte Practicado</label>
                         <input type="text" style="text-transform: uppercase;" class="m-deporte" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$|^$" title="Solo letras y espacios.">
-                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
                     
                     <div class="form-group">
@@ -1043,19 +1105,19 @@
                     <div class="form-group">
                         <label>Discapacidad</label>
                         <input type="text" style="text-transform: uppercase;" class="m-discapacidad" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^$" title="Solo letras, números y signos comunes.">
-                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
                     
                     <div class="form-group">
                         <label>Necesidad Especial</label>
                         <input type="text" style="text-transform: uppercase;" class="m-necesidadEspecial" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^$" title="Solo letras, números y signos comunes.">
-                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
 
                     <div class="form-group">
                         <label>Medicamento</label>
                         <input type="text" style="text-transform: uppercase;" class="m-medicamento" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\-]+$|^$" title="Solo letras, números y signos comunes.">
-                        <small style="color: #666; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
 
                     <div class="checkbox-group-container">
@@ -1074,7 +1136,7 @@
 
                     <div class="form-group grid-votacion" style="margin-top: 10px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <label style="font-weight: 600; font-size: 13px; color: #555; margin: 0;">Mascotas del Miembro</label>
+                            <label style="font-weight: 600; font-size: 13px; margin: 0;">Mascotas del Miembro</label>
                             <button type="button" class="btn btn-primary btn-add-mascota" style="padding: 4px 10px; font-size: 13px;" onclick="agregarFilaMascota(${miembroContador})">+ Añadir Mascota</button>
                         </div>
                         <div id="contenedorMascotas_${miembroContador}" style="display: flex; flex-direction: column; gap: 8px;">
@@ -1624,6 +1686,7 @@ function validarYEnviarCenso() {
     }
 
     window.onload = function() { 
+        inicializarModoOscuro();
         agregarFilaBombona();
         agregarMiembro(); 
         actualizarTorres();
