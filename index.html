@@ -14,13 +14,13 @@
             --miembro-bg: #F8FAFC; --disabled-bg: #E9ECEF; --disabled-color: #495057;
         }
 
-        /* ESTILOS AÑADIDOS PARA MODO OSCURO */
         [data-theme="dark"] {
             --primary-blue: #3A78BE; --secondary-blue: #5C8ED6; --light-bg: #121820;
             --card-bg: #1A222D; --text-dark: #E2E8F0; --border-color: #2D3748; --accent-green: #2ECC71;
             --accent-yellow: #F1C40F; --accent-yellow-hover: #D4AC0D;
             --info-bg: #1E2D3D; --input-bg: #222D3D; --input-border: #4A5568; --input-text: #F7FAFC;
-            --miembro-bg: #222C3B; --disabled-bg: #2D3748; --disabled-color: #A0AEC0;
+            --miembro-bg: #151C25;
+            --disabled-bg: #2D3748; --disabled-color: #A0AEC0;
         }
 
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--light-bg); color: var(--text-dark); margin: 0; padding: 20px; transition: background-color 0.3s ease, color 0.3s ease; }
@@ -29,7 +29,6 @@
         header h1 { margin: 0; font-size: 24px; letter-spacing: 0.5px; }
         header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
 
-        /* Botón de alternancia de Modo Oscuro */
         .theme-toggle-btn {
             position: absolute;
             top: 20px;
@@ -44,11 +43,8 @@
             font-weight: bold;
             transition: background 0.2s;
         }
-        .theme-toggle-btn:hover {
-            background: rgba(255, 255, 255, 0.35);
-        }
+        .theme-toggle-btn:hover { background: rgba(255, 255, 255, 0.35); }
 
-        /* TARJETA INFORMATIVA / INSTRUCCIONES */
         .info-card {
             background-color: var(--info-bg);
             border-left: 5px solid var(--secondary-blue);
@@ -57,44 +53,25 @@
             margin-bottom: 25px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        .info-card h3 {
-            margin: 0 0 8px 0;
-            color: var(--primary-blue);
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .info-card ul {
-            margin: 0;
-            padding-left: 20px;
-            font-size: 13.5px;
-            color: var(--text-dark);
-            line-height: 1.5;
-        }
-        .info-card li {
-            margin-bottom: 6px;
-        }
-        .info-card li:last-child {
-            margin-bottom: 0;
+        .info-card h3 { margin: 0 0 8px 0; color: var(--primary-blue); font-size: 16px; display: flex; align-items: center; gap: 8px; }
+        .info-card ul { margin: 0; padding-left: 20px; font-size: 13.5px; color: var(--text-dark); line-height: 1.5; }
+        .info-card li { margin-bottom: 6px; }
+        .info-card li:last-child { margin-bottom: 0; }
+
+        .input-error {
+            border-color: #DC3545 !important;
+            background-color: #FFF8F8 !important;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15) !important;
         }
 
-        /* Estilo para marcar una casilla con error */
-.input-error {
-    border-color: #DC3545 !important;
-    background-color: #FFF8F8 !important;
-    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15) !important;
-}
-
-/* Texto de error dinámico debajo de la casilla */
-.error-message-inline {
-    color: #DC3545;
-    font-size: 11.5px;
-    font-weight: 600;
-    margin-top: 4px;
-    display: block;
-    animation: fadeIn 0.2s ease;
-}
+        .error-message-inline {
+            color: #DC3545;
+            font-size: 11.5px;
+            font-weight: 600;
+            margin-top: 4px;
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
 
         .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background 0.3s, border-color 0.3s; }
         .card-title { font-size: 18px; color: var(--primary-blue); border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-top: 0; margin-bottom: 20px; font-weight: 600; }
@@ -104,12 +81,55 @@
         .form-group input, .form-group select { padding: 10px; border: 1px solid var(--input-border); border-radius: 4px; font-size: 14px; background-color: var(--input-bg); color: var(--input-text); transition: border-color 0.2s, background-color 0.3s, color 0.3s; }
         .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--secondary-blue); }
         .form-group input:disabled { background-color: var(--disabled-bg); color: var(--disabled-color); font-weight: bold; }
-        .miembro-block { border-left: 4px solid var(--secondary-blue); background: var(--miembro-bg); padding: 15px; margin-bottom: 15px; border-radius: 0 6px 6px 0; transition: background 0.3s; }
+        
+        .miembro-block { 
+    border: 1px solid var(--border-color);
+    border-top: none; /* Se conecta perfectamente con el contenedor de arriba */
+    border-left: 6px solid var(--secondary-blue); 
+    background: var(--miembro-bg); 
+    padding: 20px; 
+    margin-bottom: 30px; 
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; 
+}
+
+        /* ESTILOS MEJORADOS PARA EL TÍTULO DE CADA FAMILIAR */
+/* CONTENEDOR DEL TÍTULO CON FONDO AZUL Y ACOPLADO A LA TARJETA */
+.titulo-familiar-container {
+    margin-top: 35px;
+    margin-bottom: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--primary-blue); /* Fondo azul institucional */
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding: 12px 20px;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.04);
+    transition: background-color 0.3s ease;
+}
+
+/* ESTILO DEL TEXTO EN BLANCO */
+.titulo-familiar {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #FFFFFF; /* Letras blancas para destacar */
+    margin: 0;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+[data-theme="dark"] .titulo-familiar {
+    background: linear-gradient(135deg, #2C5E9E, #3A78BE);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
         .btn { padding: 12px 20px; border: none; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; transition: background-color 0.2s, transform 0.1s; }
         .btn-primary { background-color: var(--primary-blue); color: white; }
         .btn-primary:hover { background-color: var(--secondary-blue); }
         
-        /* BOTÓN AMARILLO LLAMATIVO Y RESPONSIVO PARA AGREGAR MIEMBRO */
         .btn-warning { 
             background-color: var(--accent-yellow); 
             color: #212529; 
@@ -129,7 +149,6 @@
         .btn-danger { background-color: #DC3545; color: white; padding: 6px 12px; font-size: 12px; }
         .flex-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 
-        /* Estilos para contenedores de Selección Múltiple */
         .checkbox-group-container {
             grid-column: 1 / -1;
             background: var(--input-bg);
@@ -164,7 +183,6 @@
             cursor: pointer;
         }
 
-        /* --- ESTILOS MEJORADOS PARA ALERTAS Y MODALES (TOASTS Y MODAL DINÁMICO) --- */
         #toast-container {
             position: fixed;
             bottom: 20px;
@@ -200,7 +218,6 @@
             to { opacity: 0; visibility: hidden; }
         }
 
-        /* Overlay y Modal Principal */
         #custom-modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -223,7 +240,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Spinner de Carga Grande */
         .modal-icon-container {
             min-height: 70px;
             display: flex;
@@ -244,7 +260,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Palomita SVG de Éxito Animada */
         .checkmark-svg {
             width: 64px;
             height: 64px;
@@ -280,7 +295,6 @@
             50% { transform: scale3d(1.1, 1.1, 1); }
         }
 
-        /* --- ADAPTACIÓN RESPONSIVA PARA MÓVILES --- */
         @media (max-width: 600px) {
             body { padding: 10px; }
             .card { padding: 15px; }
@@ -301,10 +315,8 @@
 </head>
 <body>
 
-<!-- Contenedor para Notificaciones Flotantes (Toasts) -->
 <div id="toast-container"></div>
 
-<!-- Modal de Carga / Éxito Dinámico -->
 <div id="custom-modal-overlay">
     <div class="custom-modal">
         <div class="modal-icon-container" id="modal-icon-container">
@@ -322,7 +334,6 @@
         <button type="button" class="theme-toggle-btn" id="themeToggleBtn" onclick="alternarModoOscuro()">🌙 Modo Oscuro</button>
     </header>
 
-    <!-- CUADRO DE INSTRUCCIONES DEL CENSO -->
     <div class="info-card">
         <h3>ℹ️ Información Importante para el Registro</h3>
         <ul>
@@ -336,85 +347,82 @@
 
     <form id="censoForm">
         <div class="card">
-    <div class="card-title">1. Ubicación y Datos de la Vivienda</div>
-    <div class="grid-3">
-        <div class="form-group">
-            <label>Comunidad</label>
-            <select id="comunidad" required onchange="actualizarTorres()">
-                <option value="" disabled selected>-- Seleccione una comunidad --</option>
-                <option value="Manzana">Manzanas</option>
-                <option value="Ensenada">Ensenada</option>
-                <option value="Sipao">Sipao</option>
-                <option value="Yocoima">Yocoima</option>
-                <option value="Rubiera">Rubieras</option>
-                <option value="19A">Edificio 19A</option>
-                <option value="19B">Edificio 19B</option>
-                <option value="19C">Edificio 19C</option>
-                <option value="20A">Edificio 20A</option>
-                <option value="20B">Edificio 20B</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Torre / Bloque</label>
-            <select id="torre" required>
-                <option value="" disabled selected>-- Seleccione una torre/bloque --</option>
-                <option value="1">Torre 1</option>
-                <option value="2">Torre 2</option>
-                <option value="3">Torre 3</option>
-                <option value="4">Torre 4</option>
-                <option value="5">Torre 5</option>
-                <option value="6">Torre 6</option>
-                <option value="7">Torre 7</option>
-                <option value="8">Torre 8</option>
-                <option value="15">Manzana 15</option>
-                <option value="16">Manzana 16</option>
-                <option value="17">Manzana 17</option>
-                <option value="18">Manzana 18</option>
-                <option value="25">Manzana 25</option>
-                <option value="1">Rubiera 1</option>
-                <option value="2">Rubiera 2</option>
-                <option value="3">Rubiera 3</option>
-                <option value="UNICA">Conjunto Ensenada</option>
-                <option value="UNICA">Conjunto Sipao</option>
-                <option value="UNICA">Conjunto Yocoima</option>
-            </select>
-        </div>
+            <div class="card-title">1. Ubicación y Datos de la Vivienda</div>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Comunidad</label>
+                    <select id="comunidad" required onchange="actualizarTorres()">
+                        <option value="" disabled selected>-- Seleccione una comunidad --</option>
+                        <option value="Manzana">Manzanas</option>
+                        <option value="Ensenada">Ensenada</option>
+                        <option value="Sipao">Sipao</option>
+                        <option value="Yocoima">Yocoima</option>
+                        <option value="Rubiera">Rubieras</option>
+                        <option value="19A">Edificio 19A</option>
+                        <option value="19B">Edificio 19B</option>
+                        <option value="19C">Edificio 19C</option>
+                        <option value="20A">Edificio 20A</option>
+                        <option value="20B">Edificio 20B</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Torre / Bloque</label>
+                    <select id="torre" required>
+                        <option value="" disabled selected>-- Seleccione una torre/bloque --</option>
+                        <option value="1">Torre 1</option>
+                        <option value="2">Torre 2</option>
+                        <option value="3">Torre 3</option>
+                        <option value="4">Torre 4</option>
+                        <option value="5">Torre 5</option>
+                        <option value="6">Torre 6</option>
+                        <option value="7">Torre 7</option>
+                        <option value="8">Torre 8</option>
+                        <option value="15">Manzana 15</option>
+                        <option value="16">Manzana 16</option>
+                        <option value="17">Manzana 17</option>
+                        <option value="18">Manzana 18</option>
+                        <option value="25">Manzana 25</option>
+                        <option value="1">Rubiera 1</option>
+                        <option value="2">Rubiera 2</option>
+                        <option value="3">Rubiera 3</option>
+                        <option value="UNICA">Conjunto Ensenada</option>
+                        <option value="UNICA">Conjunto Sipao</option>
+                        <option value="UNICA">Conjunto Yocoima</option>
+                    </select>
+                </div>
 
-        <div class="form-group">
-            <label>Número de Casa / Apto</label>
-            <input type="text" id="numeroCasaApto" style="text-transform: uppercase;" required pattern="^(?:PB-[1-4]|[123]-[1-4]|A[1-6]|B[1-5]|C[1-5]|D[1-35]|E[1-6]|0[1-3]|F[1-5]|G[1-6]|G1-A|G6A|H[1-5]|I[1-6]|J[1-5]|K[1-5]|L[1-4]|M[1-5]|N[1-4]|30-A[12]?|5-A[134]|9-A1|13-A|18-A|20-A2|23-A|25-A|33-A|38-A|41-A1|7-B|8-A|10-A|[1-9]|[1-4][0-9]|5[0-8])$" title="Ingrese un número de casa o apartamento válido">
-            <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: A1, 10, PB-1</small>
-        </div>
+                <div class="form-group">
+                    <label>Número de Casa / Apto</label>
+                    <input type="text" id="numeroCasaApto" style="text-transform: uppercase;" required pattern="^(?:PB-[1-4]|[123]-[1-4]|A[1-6]|B[1-5]|C[1-5]|D[1-35]|E[1-6]|0[1-3]|F[1-5]|G[1-6]|G1-A|G6A|H[1-5]|I[1-6]|J[1-5]|K[1-5]|L[1-4]|M[1-5]|N[1-4]|30-A[12]?|5-A[134]|9-A1|13-A|18-A|20-A2|23-A|25-A|33-A|38-A|41-A1|7-B|8-A|10-A|[1-9]|[1-4][0-9]|5[0-8])$" title="Ingrese un número de casa o apartamento válido">
+                    <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: A1, 10, PB-1</small>
+                </div>
 
-        <div class="form-group">
-            <label>Condición de la Vivienda</label>
-            <select id="condicionVivienda" required>
-                <option value="" disabled selected>-- Seleccione condición --</option>
-                <option value="PROPIA">Vivienda Propia</option>
-                <option value="ALQUILADA">Vivienda Alquilada</option>
-                <option value="DE UN FAMILIAR">Vivienda de Familiar</option>
-                <option value="VISITANTE">Visitante</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Estado del Ocupante</label>
-            <select id="estadoOcupante" required>
-                <option value="" disabled selected>-- Seleccione estado --</option>
-                <option value="ACTIVO">Activo</option>
-                <option value="IRREGULAR">Irregular</option>
-                <option value="AUSENTE">Ausente</option>
-            </select>
-        </div>
+                <div class="form-group">
+                    <label>Condición de la Vivienda</label>
+                    <select id="condicionVivienda" required>
+                        <option value="" disabled selected>-- Seleccione condición --</option>
+                        <option value="PROPIA">Vivienda Propia</option>
+                        <option value="ALQUILADA">Vivienda Alquilada</option>
+                        <option value="DE UN FAMILIAR">Vivienda de Familiar</option>
+                        <option value="VISITANTE">Visitante</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estado del Ocupante</label>
+                    <select id="estadoOcupante" required>
+                        <option value="" disabled selected>-- Seleccione estado --</option>
+                        <option value="ACTIVO">Activo</option>
+                        <option value="IRREGULAR">Irregular</option>
+                        <option value="AUSENTE">Ausente</option>
+                    </select>
+                </div>
                 
-                <!-- CASILLA DINÁMICA DE BOMBONA DE GAS -->
                 <div class="form-group grid-votacion" style="margin-top: 5px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <label style="font-weight: 600; font-size: 13px; margin: 0;">Bombonas de Gas de la Vivienda</label>
                         <button type="button" class="btn btn-primary btn-add-bombona" style="padding: 4px 10px; font-size: 13px;" onclick="agregarFilaBombona()">+ Añadir Bombona</button>
                     </div>
-                    <div id="contenedorBombonas" style="display: flex; flex-direction: column; gap: 8px;">
-                        <!-- Se autoinicializa en window.onload -->
-                    </div>
+                    <div id="contenedorBombonas" style="display: flex; flex-direction: column; gap: 8px;"></div>
                 </div>
 
                 <div class="form-group">
@@ -467,7 +475,6 @@
         { value: "43 KG", text: "43 Kg" },
     ];
 
-    /* --- LÓGICA DE MODO OSCURO --- */
     function inicializarModoOscuro() {
         const savedTheme = localStorage.getItem('theme');
         const btn = document.getElementById('themeToggleBtn');
@@ -494,7 +501,6 @@
         }
     }
 
-    /* --- ALERTAS Y MODAL DE CARGA / COMPLETADO CON PALOMITA VERDE --- */
     function mostrarAlerta(mensaje, tipo = 'success') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
@@ -1014,8 +1020,8 @@
             
             if (data.vivienda) {
                 document.getElementById('comunidad').value = data.vivienda.comunidad || '';
-                actualizarTorres(); // Rellena las opciones según la comunidad
-                document.getElementById('torre').value = data.vivienda.torre || ''; // Asigna la torre después
+                actualizarTorres();
+                document.getElementById('torre').value = data.vivienda.torre || '';
                 document.getElementById('numeroCasaApto').value = data.vivienda.numeroCasaApto || '';
                 document.getElementById('condicionVivienda').value = data.vivienda.condicionVivienda || '';
                 document.getElementById('estadoOcupante').value = data.vivienda.estadoOcupante || '';
@@ -1026,8 +1032,6 @@
                 const contenedorB = document.getElementById('contenedorBombonas');
                 contenedorB.innerHTML = '';
                 data.bombonas.forEach((b) => {
-                    // Se llama a agregarFilaBombona() para cada elemento del arreglo, 
-                    // ya que el contenedor se había vaciado previamente con innerHTML = ''
                     agregarFilaBombona(); 
                     
                     const filasB = contenedorB.querySelectorAll('.fila-bombona');
@@ -1107,8 +1111,6 @@
                         const contMascotas = document.getElementById(`contenedorMascotas_${miembroContador}`);
                         contMascotas.innerHTML = '';
                         m.mascotas.forEach((masc) => {
-                            // Se llama a agregarFilaMascota para cada elemento, 
-                            // ya que el contenedor se vació previamente con innerHTML = ''
                             agregarFilaMascota(miembroContador);
                             
                             const filasM = contMascotas.querySelectorAll('.fila-mascota');
@@ -1150,11 +1152,14 @@
             </label>
         `).join('');
 
+        /* Modificación: Se coloca el contenedor del título por fuera del div.miembro-block */
         const miembroHtml = `
+            <div class="titulo-familiar-container" id="wrapper_titulo_${miembroContador}">
+                <h2 class="titulo-familiar">Familiar #${miembroContador}</h2>
+            </div>
             <div class="miembro-block" id="miembro_${miembroContador}">
-                <div class="flex-between">
-                    <h5 style="margin:0; color:var(--secondary-blue);">Familiar #${miembroContador}</h5>
-                    ${miembroContador > 1 ? `<button type="button" class="btn btn-danger" onclick="removerMiembro(${miembroContador})">Eliminar</button>` : ''}
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+                    ${miembroContador > 1 ? `<button type="button" class="btn btn-danger" onclick="removerMiembro(${miembroContador})">Eliminar Familiar</button>` : ''}
                 </div>
                 <input type="hidden" class="m-edad" value="0">
                 
@@ -1337,9 +1342,7 @@
                             <label style="font-weight: 600; font-size: 13px; margin: 0;">Mascotas del Miembro</label>
                             <button type="button" class="btn btn-primary btn-add-mascota" style="padding: 4px 10px; font-size: 13px;" onclick="agregarFilaMascota(${miembroContador})">+ Añadir Mascota</button>
                         </div>
-                        <div id="contenedorMascotas_${miembroContador}" style="display: flex; flex-direction: column; gap: 8px;">
-                            <!-- Se autoinicializa con la primera fila -->
-                        </div>
+                        <div id="contenedorMascotas_${miembroContador}" style="display: flex; flex-direction: column; gap: 8px;"></div>
                     </div>
 
                     <div class="form-group grid-votacion">
@@ -1391,8 +1394,12 @@
         }
     }
 
+    /* Modificación: Se elimina también el contenedor del título si existe */
     function removerMiembro(id) {
-        document.getElementById(`miembro_${id}`).remove();
+        const block = document.getElementById(`miembro_${id}`);
+        const wrapperTitulo = document.getElementById(`wrapper_titulo_${id}`);
+        if (block) block.remove();
+        if (wrapperTitulo) wrapperTitulo.remove();
         guardarBorrador();
     }
 
