@@ -730,6 +730,7 @@
     function removerFilaBombona(btn) {
         btn.parentElement.remove();
         actualizarOpcionesBombonasGlobal();
+        guardarBorrador();
     }
 
     function obtenerTextoBombonasFormateado() {
@@ -932,6 +933,7 @@
     function removerFilaMascota(btn, idMiembro) {
         btn.parentElement.remove();
         actualizarOpcionesMascotasMiembro(idMiembro);
+        guardarBorrador();
     }
 
     function guardarBorrador() {
@@ -1023,8 +1025,11 @@
             if (data.bombonas && data.bombonas.length > 0) {
                 const contenedorB = document.getElementById('contenedorBombonas');
                 contenedorB.innerHTML = '';
-                data.bombonas.forEach((b, index) => {
-                    if (index > 0) agregarFilaBombona();
+                data.bombonas.forEach((b) => {
+                    // Se llama a agregarFilaBombona() para cada elemento del arreglo, 
+                    // ya que el contenedor se había vaciado previamente con innerHTML = ''
+                    agregarFilaBombona(); 
+                    
                     const filasB = contenedorB.querySelectorAll('.fila-bombona');
                     const filaActual = filasB[filasB.length - 1];
                     if (filaActual) {
@@ -1101,8 +1106,11 @@
                     if (m.mascotas && m.mascotas.length > 0) {
                         const contMascotas = document.getElementById(`contenedorMascotas_${miembroContador}`);
                         contMascotas.innerHTML = '';
-                        m.mascotas.forEach((masc, idxM) => {
-                            if (idxM > 0) agregarFilaMascota(miembroContador);
+                        m.mascotas.forEach((masc) => {
+                            // Se llama a agregarFilaMascota para cada elemento, 
+                            // ya que el contenedor se vació previamente con innerHTML = ''
+                            agregarFilaMascota(miembroContador);
+                            
                             const filasM = contMascotas.querySelectorAll('.fila-mascota');
                             const filaMActual = filasM[filasM.length - 1];
                             if (filaMActual) {
