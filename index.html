@@ -82,49 +82,74 @@
         .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--secondary-blue); }
         .form-group input:disabled { background-color: var(--disabled-bg); color: var(--disabled-color); font-weight: bold; }
         
+
+        /* Evita que los inputs, selects y contenedores flex/grid superen el ancho de su columna */
+        .form-group,
+        .form-group > div,
+        .form-group input,
+        .form-group select {
+            box-sizing: border-box;
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+        }
+
+        /* Excepción para el selector V/E de la cédula para que mantenga su ancho fijo */
+        .form-group select.m-nacionalidad {
+            width: 65px;
+            flex-shrink: 0;
+        }
         .miembro-block { 
-    border: 1px solid var(--border-color);
-    border-top: none; /* Se conecta perfectamente con el contenedor de arriba */
-    border-left: 6px solid var(--secondary-blue); 
-    background: var(--miembro-bg); 
-    padding: 20px; 
-    margin-bottom: 30px; 
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; 
-}
+            border: 1px solid var(--border-color);
+            border-top: none; /* Se conecta perfectamente con el contenedor de arriba */
+            border-left: 6px solid var(--secondary-blue); 
+            background: var(--miembro-bg); 
+            padding: 20px; 
+            margin-bottom: 30px; 
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+            transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; 
+            box-sizing: border-box;
+            width: 100%;
+        }
 
-        /* ESTILOS MEJORADOS PARA EL TÍTULO DE CADA FAMILIAR */
-/* CONTENEDOR DEL TÍTULO CON FONDO AZUL Y ACOPLADO A LA TARJETA */
-.titulo-familiar-container {
-    margin-top: 35px;
-    margin-bottom: 0px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--primary-blue); /* Fondo azul institucional */
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    padding: 12px 20px;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.04);
-    transition: background-color 0.3s ease;
-}
+                /* ESTILOS MEJORADOS PARA EL TÍTULO DE CADA FAMILIAR */
+        /* CONTENEDOR DEL TÍTULO CON FONDO AZUL Y ACOPLADO A LA TARJETA */
+        .titulo-familiar-container {
+            margin-top: 35px;
+            margin-bottom: 0px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary-blue); /* Fondo azul institucional */
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            padding: 12px 20px;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.04);
+            transition: background-color 0.3s ease;
+            box-sizing: border-box;
+            width: 100%;
+        }
 
-/* ESTILO DEL TEXTO EN BLANCO */
-.titulo-familiar {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #FFFFFF; /* Letras blancas para destacar */
-    margin: 0;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-}
-[data-theme="dark"] .titulo-familiar {
-    background: linear-gradient(135deg, #2C5E9E, #3A78BE);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-}
+        /* ESTILO DEL TEXTO EN BLANCO */
+        .titulo-familiar {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #FFFFFF; /* Letras blancas para destacar */
+            margin: 0;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        [data-theme="dark"] .titulo-familiar {
+            background: linear-gradient(135deg, #2C5E9E, #3A78BE);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
 
         .btn { padding: 12px 20px; border: none; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; transition: background-color 0.2s, transform 0.1s; }
         .btn-primary { background-color: var(--primary-blue); color: white; }
