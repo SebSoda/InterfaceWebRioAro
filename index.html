@@ -1195,11 +1195,20 @@
                     
                     <div class="form-group">
                         <label>Número de Teléfono Celular</label>
-                        <input type="tel" class="m-telefono" maxlength="11" 
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-                            pattern="^(0414|0424|0412|0416|0426)\\d{7}$|^$" 
-                            title="Debe ser un número celular de Venezuela válido (ej. 04141234567).">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: 04141234567</small>
+                        <input type="tel" class="m-telefono" maxlength="12" 
+                            oninput="formatearTelefono(this)"
+                            pattern="^(0414|0424|0412|0416|0426)-\\d{7}$|^$" 
+                            title="Debe ser un número celular de Venezuela válido (ej. 0412-1185242).">
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: 0412-1185242</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Número de Teléfono Adicional</label>
+                        <input type="tel" class="m-telefonoAdicional" maxlength="12" 
+                            oninput="formatearTelefono(this)"
+                            pattern="^(0414|0424|0412|0416|0426)-\\d{7}$|^$" 
+                            title="Debe ser un número celular de Venezuela válido (ej. 0412-1185242).">
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: 0412-1185242</small>
                     </div>
                     
                     <div class="form-group">
@@ -1459,6 +1468,25 @@
                 }
             });
         }
+    }
+
+    function formatearTelefono(input) {
+        // Remover todo lo que no sea dígito
+        let limpio = input.value.replace(/\D/g, '');
+        
+        // Limitar a un máximo de 11 dígitos
+        if (limpio.length > 11) {
+            limpio = limpio.substring(0, 11);
+        }
+
+        let formateado = '';
+        if (limpio.length > 4) {
+            formateado = limpio.substring(0, 4) + '-' + limpio.substring(4);
+        } else {
+            formateado = limpio;
+        }
+
+        input.value = formateado;
     }
 
     function calcularEdadYValidarId(idNum) {
@@ -1805,6 +1833,7 @@
                 edad: edad,
                 cedulaIdentidad: cedulaFinal,
                 telefonoCelular: block.querySelector('.m-telefono').value || "N/A",
+                telefonoAdicional: block.querySelector('.m-telefonoAdicional').value || "N/A",
                 correoElectronico: block.querySelector('.m-correo').value || "N/A",
                 generoBiologico: block.querySelector('.m-genero').value,
                 parentesco: block.querySelector('.m-parentesco').value,
@@ -1839,6 +1868,7 @@
                 "¿Embarazada?": miembro.embarazadas,
                 "¿Lactante 0 - 11 meses?": miembro.lactantes,
                 "Numero de teléfono celular": miembro.telefonoCelular,
+                "Numero de teléfono adicional": miembro.telefonoAdicional,
                 "Correo electrónico": miembro.correoElectronico,
                 "Profesión": miembro.profesion,
                 "Ocupación": miembro.ocupacion,
