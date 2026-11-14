@@ -452,11 +452,16 @@
         "Enfermedad musculo-esquelética", "Diabetes", "Asma", "Hiperplasia prostática",
         "Enfermedad mental", "Tiroides y problemas hormonales", "Lupus",
         "Artritis / Artrosis", "Enfermedad renal", "Trastorno gastrointestinal",
-        "Alergias", "Cáncer", "Glaucoma", "Parkinson", "Otro"
+        "Alergias", "Cáncer", "Glaucoma", "Parkinson", "Otra"
     ];
 
     const listaBeneficios = [
         "Ninguno", "JUBILACIÓN", "PENSIÓN", "CARNET DE LA PATRIA", "OTRO"
+    ];
+
+    const listaNecesidadesEspeciales = [
+        "Ninguna", "Muletas", "Silla de ruedas", "Bastón", "Cama ortopedica", 
+        "Bombona de oxigeno", "Aparatos auditivos", "Protesis", "Collarin", "Faja ortopedica", "Otra"
     ];
 
     const opcionesTiposMascotas = [
@@ -767,7 +772,10 @@
         const block = document.getElementById(`miembro_${idNum}`);
         if (!block) return;
 
-        const selectorClase = tipo === 'enfermedad' ? '.chk-enfermedad' : '.chk-beneficio';
+        let selectorClase = '.chk-enfermedad';
+        if (tipo === 'beneficio') selectorClase = '.chk-beneficio';
+        if (tipo === 'necesidad') selectorClase = '.chk-necesidad';
+        
         const checkboxes = block.querySelectorAll(selectorClase);
         
         if (checkboxCambiado.value.toUpperCase() === 'NINGUNA' || checkboxCambiado.value.toUpperCase() === 'NINGUNO') {
@@ -968,6 +976,9 @@
             const beneficios = [];
             block.querySelectorAll('.chk-beneficio:checked').forEach(chk => beneficios.push(chk.value));
 
+            const necesidadesEspeciales = [];
+            block.querySelectorAll('.chk-necesidad:checked').forEach(chk => necesidadesEspeciales.push(chk.value));
+
             const mascotas = [];
             block.querySelectorAll('.fila-mascota').forEach(fila => {
                 mascotas.push({
@@ -993,7 +1004,6 @@
                 deporte: block.querySelector('.m-deporte').value,
                 estudio: block.querySelector('.m-estudio').value,
                 discapacidad: block.querySelector('.m-discapacidad').value,
-                necesidadEspecial: block.querySelector('.m-necesidadEspecial').value,
                 medicamento: block.querySelector('.m-medicamento').value,
                 cneInscrito: block.querySelector('.m-cne').checked,
                 vEstado: block.querySelector('.m-v-estado').value,
@@ -1003,7 +1013,8 @@
                 vNombre: block.querySelector('.m-v-nombre').value,
                 enfermedades,
                 beneficios,
-                mascotas
+                mascotas,
+                necesidadesEspeciales
             });
         });
 
@@ -1077,7 +1088,6 @@
                     block.querySelector('.m-deporte').value = m.deporte || '';
                     block.querySelector('.m-estudio').value = m.estudio || '';
                     block.querySelector('.m-discapacidad').value = m.discapacidad || '';
-                    block.querySelector('.m-necesidadEspecial').value = m.necesidadEspecial || '';
                     block.querySelector('.m-medicamento').value = m.medicamento || '';
 
                     calcularEdadYValidarId(miembroContador);
@@ -1104,6 +1114,13 @@
                         const chkBen = block.querySelectorAll('.chk-beneficio');
                         chkBen.forEach(chk => {
                             chk.checked = m.beneficios.includes(chk.value);
+                        });
+                    }
+
+                    if (m.necesidadesEspeciales && m.necesidadesEspeciales.length > 0) {
+                        const chkNec = block.querySelectorAll('.chk-necesidad');
+                        chkNec.forEach(chk => {
+                            chk.checked = m.necesidadesEspeciales.includes(chk.value);
                         });
                     }
 
@@ -1149,6 +1166,13 @@
             <label class="checkbox-item">
                 <input type="checkbox" class="chk-beneficio" value="${ben}" ${idx === 0 ? 'checked' : ''} onchange="alternarNinguno(${miembroContador}, 'beneficio', this)">
                 ${ben}
+            </label>
+        `).join('');
+
+        let necesidadesHtml = listaNecesidadesEspeciales.map((nec, idx) => `
+            <label class="checkbox-item">
+                <input type="checkbox" class="chk-necesidad" value="${nec}" ${idx === 0 ? 'checked' : ''} onchange="alternarNinguno(${miembroContador}, 'necesidad', this)">
+                ${nec}
             </label>
         `).join('');
 
@@ -1319,17 +1343,18 @@
                         <input type="text" style="text-transform: uppercase;" class="m-discapacidad" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\\-]+$|^$" title="Solo letras, números y signos comunes.">
                         <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>Necesidad Especial</label>
-                        <input type="text" style="text-transform: uppercase;" class="m-necesidadEspecial" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\\-]+$|^$" title="Solo letras, números y signos comunes.">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
-                    </div>
 
                     <div class="form-group">
                         <label>Medicamento</label>
                         <input type="text" style="text-transform: uppercase;" class="m-medicamento" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\\-]+$|^$" title="Solo letras, números y signos comunes.">
                         <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                    </div>
+                    
+                    <div class="checkbox-group-container">
+                        <span class="checkbox-group-title">Necesidades Especiales / Movilidad</span>
+                        <div class="checkbox-grid">
+                            ${necesidadesHtml}
+                        </div>
                     </div>
 
                     <div class="checkbox-group-container">
@@ -1846,7 +1871,7 @@
                 deportePracticado: block.querySelector('.m-deporte').value.toUpperCase(),
                 estudioCursado: block.querySelector('.m-estudio').value,
                 tipoDiscapacidad: block.querySelector('.m-discapacidad').value.toUpperCase(),
-                necesidadEspecial: block.querySelector('.m-necesidadEspecial').value.toUpperCase(),
+                necesidadEspecial: obtenerValoresSeleccionados(block, '.chk-necesidad'),
                 enfermedadesCronicas: obtenerValoresSeleccionados(block, '.chk-enfermedad'),
                 medicamento: block.querySelector('.m-medicamento').value.toUpperCase(),
                 centroVotacion: centroVotacionFinal,
