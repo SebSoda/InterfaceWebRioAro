@@ -29,6 +29,18 @@
         header h1 { margin: 0; font-size: 24px; letter-spacing: 0.5px; }
         header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
 
+        /* Ajuste de errores en modo oscuro */
+        [data-theme="dark"] .input-error {
+            border-color: #E74C3C !important;
+            background-color: #2C1A1D !important;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.25) !important;
+        }
+
+        [data-theme="dark"] .error-message-inline {
+            color: #FF6B6B !important;
+            font-weight: 600;
+        }
+
         .theme-toggle-btn {
             position: absolute;
             top: 20px;
@@ -1843,6 +1855,8 @@
             const nombre = block.querySelector('.m-nombre');
             const fechaNac = block.querySelector('.m-fechaNac');
             const cedula = block.querySelector('.m-cedula');
+            const telefono = block.querySelector('.m-telefono');
+            const telefonoAdicional = block.querySelector('.m-telefonoAdicional');
             const genero = block.querySelector('.m-genero');
             const parentesco = block.querySelector('.m-parentesco');
             const civil = block.querySelector('.m-civil');
@@ -1863,6 +1877,20 @@
             if (!cedula.disabled && !cedula.value.trim()) {
                 mostrarAlerta("Por favor, revise el campo señalado en rojo.", "error");
                 marcarCampoConError(cedula, "Ingrese el número de cédula de identidad.");
+                errorEncontrado = true;
+                return;
+            }
+            const regexTelefono = /^(0414|0422|0424|0412|0416|0426)-\d{7}$/;
+            if (telefono.value.trim() !== "" && !regexTelefono.test(telefono.value.trim())) {
+                mostrarAlerta("Por favor, revise el campo de teléfono señalado.", "error");
+                marcarCampoConError(telefono, "Formato inválido. Debe ser: 0412, 0422, 0424, 0414, 0416 o 0426.");
+                errorEncontrado = true;
+                return;
+            }
+
+            if (telefonoAdicional.value.trim() !== "" && !regexTelefono.test(telefonoAdicional.value.trim())) {
+                mostrarAlerta("Por favor, revise el campo de teléfono adicional.", "error");
+                marcarCampoConError(telefonoAdicional, "Formato inválido. Debe ser: 0412, 0422, 0424, 0414, 0416 o 0426.");
                 errorEncontrado = true;
                 return;
             }
@@ -2014,7 +2042,7 @@
             });
         });
 
-        mostrarModalCarga("Procesando Censo", "Exportando planilla Excel y guardando registros...");
+        mostrarModalCarga("Procesando Censo", "Exportando y guardando registros...");
         //exportarAExcelNativo(filasParaExcel, viviendaGlobal.numeroCasaApto);
 
         fetch(WEB_APP_URL, {
@@ -2025,11 +2053,11 @@
         })
         .then(() => {
             localStorage.removeItem('censo_borrador');
-            mostrarModalCompletado("¡Censo Completado!", "Los datos fueron transmitidos y el archivo Excel se ha guardado correctamente.");
+            mostrarModalCompletado("¡Censo Completado!", "Los datos fueron transmitidos.");
             setTimeout(() => { location.reload(); }, 3000);
         }).catch(err => {
             ocultarModalCarga();
-            mostrarAlerta("Error de conexión. El archivo Excel servirá como respaldo local.", "error");
+            mostrarAlerta("Error de conexión. Intente nuevamente.", "error");
             console.error(err);
         });
     }
