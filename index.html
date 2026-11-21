@@ -57,19 +57,61 @@
         }
         .theme-toggle-btn:hover { background: rgba(255, 255, 255, 0.35); }
 
-        .info-card {
-            background-color: var(--info-bg);
-            border-left: 5px solid var(--secondary-blue);
-            border-radius: 6px;
-            padding: 18px 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .info-card h3 { margin: 0 0 8px 0; color: var(--primary-blue); font-size: 16px; display: flex; align-items: center; gap: 8px; }
-        .info-card ul { margin: 0; padding-left: 20px; font-size: 13.5px; color: var(--text-dark); line-height: 1.5; }
-        .info-card li { margin-bottom: 6px; }
-        .info-card li:last-child { margin-bottom: 0; }
+        /* Tarjeta de advertencia roja de alto contraste */
+.info-card {
+    background-color: #FFF0F0;
+    border: 2px solid #DC3545;
+    border-left: 8px solid #B01C2E;
+    border-radius: 8px;
+    padding: 20px 22px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.16);
+}
 
+.info-card h3 {
+    margin: 0 0 12px 0;
+    color: #A61B29;
+    font-size: 20px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.info-card ul {
+    margin: 0;
+    padding-left: 22px;
+    font-size: 15.5px;
+    font-weight: 500;
+    color: #2B0A0E;
+    line-height: 1.55;
+}
+
+.info-card li {
+    margin-bottom: 10px;
+}
+
+.info-card li:last-child {
+    margin-bottom: 0;
+}
+
+/* Ajuste en Modo Oscuro para mantener contraste sin quemar la vista */
+[data-theme="dark"] .info-card {
+    background-color: #331418;
+    border-color: #FF5263;
+    border-left-color: #FF2E42;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="dark"] .info-card h3 {
+    color: #FF7582;
+}
+
+[data-theme="dark"] .info-card ul {
+    color: #FFE5E8;
+}
         .input-error {
             border-color: #DC3545 !important;
             background-color: #FFF8F8 !important;
@@ -328,6 +370,41 @@
 
         .grid-votacion { grid-column: 1 / -1;}
         .grid-votacion-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+
+        .btn-reset-borrador {
+            padding: 13px 22px;
+            font-size: 15px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 3px 8px rgba(220, 53, 69, 0.25);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 22px;
+        }
+
+        .btn-secondary {
+            background-color: #6C757D;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5A6268;
+        }
+
+        .votacion-campo-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
     </style>
 </head>
 <body>
@@ -351,16 +428,19 @@
         <button type="button" class="theme-toggle-btn" id="themeToggleBtn" onclick="alternarModoOscuro()">🌙 Modo Oscuro</button>
     </header>
 
-    <div class="info-card">
-        <h3>ℹ️ Información Importante para el Registro</h3>
+    <div class="info-card" role="alert">
+        <h3>⚠️ Antes de Continuar</h3>
         <ul>
-            <li><strong>Proceso único por núcleo familiar:</strong> El registro debe realizarse <strong>una sola vez por vivienda</strong>, cargando a todos los miembros de la familia en la misma planilla antes de enviarla. Por favor, <strong>no envíes un formulario individual por cada persona</strong></li>
-            <li><strong>¿Quién debe realizar el censo?</strong> Preferiblemente debe ser completado por el/la <strong>Jefe(a) de Hogar</strong>. En caso de no estar presente, puede llenarlo cualquier integrante del núcleo familiar siempre que cuente con todos los datos requeridos.</li>
-            <li><strong>Relación de Parentesco:</strong> Todos los parentescos seleccionados en el formulario deben ser <strong>con respecto al Jefe(a) de Hogar</strong>. <em>Ejemplo: Si la abuela es registrada como Jefe(a) de Hogar, los demás familiares deben indicarse como sus hijos, nietos, etc.</em></li>
+            <li><strong>Un solo envío por vivienda:</strong> Carga a <strong>toda la familia</strong> en este mismo formulario. No envíes uno por persona.</li>
+            <li><strong>¿Quién lo llena?</strong> Idealmente el <strong>Jefe(a) de Hogar</strong>, o cualquier familiar con todos los datos.</li>
+            <li><strong>Parentesco:</strong> Siempre <strong>respecto al Jefe(a) de Hogar</strong> <em>(ej.: si es la abuela, los demás son hijos, nietos, etc.)</em>.</li>
+            <li><strong>Tomate tu tiempo:</strong> Puedes salir del formulario en cualquier momento y continuar más tarde. Los datos no se perderán.</li>
         </ul>
     </div>
 
-    <button type="button" class="btn btn-danger" onclick="localStorage.removeItem('censo_borrador'); location.reload();" style="margin-bottom: 15px;">🗑️ Borrar borrador y reiniciar</button>
+    <button type="button" class="btn btn-danger btn-reset-borrador" onclick="confirmarReinicioBorrador()">
+        🗑️ Borrar borrador y reiniciar
+    </button>
 
     <form id="censoForm">
         <div class="card">
@@ -570,6 +650,35 @@
     function ocultarModalCarga() {
         const overlay = document.getElementById('custom-modal-overlay');
         overlay.style.display = 'none';
+    }
+
+    function confirmarReinicioBorrador() {
+        const overlay = document.getElementById('custom-modal-overlay');
+        const iconContainer = document.getElementById('modal-icon-container');
+        const titleEl = document.getElementById('modal-title');
+        const textEl = document.getElementById('modal-text');
+
+        iconContainer.innerHTML = `<div style="font-size: 46px; line-height: 1;">⚠️</div>`;
+        titleEl.style.color = '#DC3545';
+        titleEl.textContent = '¿Borrar borrador y reiniciar?';
+        textEl.innerHTML = `
+            Se eliminarán todos los datos ingresados hasta ahora en este navegador y la página volverá al inicio.
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="btnCancelarReinicio">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarReinicio" style="padding: 12px 18px; font-size: 14px;">Sí, borrar todo</button>
+            </div>
+        `;
+
+        overlay.style.display = 'flex';
+
+        document.getElementById('btnCancelarReinicio').onclick = () => {
+            ocultarModalCarga();
+        };
+
+        document.getElementById('btnConfirmarReinicio').onclick = () => {
+            localStorage.removeItem('censo_borrador');
+            location.reload();
+        };
     }
 
     function formatearEntradaFecha(input) {
@@ -1303,21 +1412,21 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>Número de Teléfono Celular</label>
+                        <label>Número de Teléfono Principal</label>
                         <input type="tel" class="m-telefono" maxlength="12" 
                             oninput="formatearTelefono(this)"
-                            pattern="^(0414|0424|0412|0416|0426)-\\d{7}$|^$" 
-                            title="Debe ser un número celular de Venezuela válido (ej. 0412-1185242).">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: 0412-1185242</small>
+                            pattern="^(0414|0422|0424|0412|0416|0426|02\d{2})-\d{7}$|^$" 
+                            title="Ingrese un número celular o fijo de Venezuela válido (ej. 0412-1122333 o 0286-9123456).">
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: 0412-1122333 o 0286-9123456</small>
                     </div>
 
                     <div class="form-group">
-                        <label>Número de Teléfono Adicional</label>
+                        <label>Teléfono en caso de emergencia</label>
                         <input type="tel" class="m-telefonoAdicional" maxlength="12" 
                             oninput="formatearTelefono(this)"
-                            pattern="^(0414|0424|0412|0416|0426)-\\d{7}$|^$" 
-                            title="Debe ser un número celular de Venezuela válido (ej. 0412-1185242).">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: 0412-1185242</small>
+                            pattern="^(0414|0422|0424|0412|0416|0426|02\d{2})-\d{7}$|^$" 
+                            title="Ingrese un número celular o fijo de Venezuela válido (ej. 0412-1122333 o 0286-9123456).">
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: 0412-1122333 o 0286-9123456</small>
                     </div>
                     
                     <div class="form-group">
@@ -1333,6 +1442,14 @@
                             <option value="M">Masculino</option>
                             <option value="F">Femenino</option>
                         </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>¿Está Embarazada?</label>
+                        <select class="m-embarazo">
+                            <option value="NA" selected>NA</option>
+                        </select>
+                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Si su genero es masculino, ignore este campo</small>
                     </div>
                     
                     <div class="form-group">
@@ -1363,13 +1480,6 @@
                             <option value="CASADO/A">Casado(a)</option>
                             <option value="DIVORCIADO/A">Divorciado(a)</option>
                             <option value="VIUDO/A">Viudo(a)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>¿Está Embarazada?</label>
-                        <select class="m-embarazo">
-                            <option value="NA" selected>NA</option>
                         </select>
                     </div>
 
@@ -1474,25 +1584,30 @@
                         <label>Ubicación y Centro de Votación</label>
                         <div class="grid-votacion-inputs">
                             <div style="width: 100%;">
+                                <label class="votacion-campo-label">Estado</label>
                                 <input type="text" class="m-v-estado" style="text-transform: uppercase; width: 100%; box-sizing: border-box;">
                                 <small style="opacity: 0.7; font-size: 11px; margin-top: 3px; display: block;">Ejemplo: Bolívar</small>
                             </div>
                             <div style="width: 100%;">
+                                <label class="votacion-campo-label">Ciudad</label>
                                 <input type="text" class="m-v-ciudad" style="text-transform: uppercase; width: 100%; box-sizing: border-box;">
                                 <small style="opacity: 0.7; font-size: 11px; margin-top: 3px; display: block;">Ejemplo: Puerto Ordaz</small>
                             </div>
                             <div style="width: 100%;">
+                                <label class="votacion-campo-label">Municipio</label>
                                 <input type="text" class="m-v-Municipio" style="text-transform: uppercase; width: 100%; box-sizing: border-box;">
                                 <small style="opacity: 0.7; font-size: 11px; margin-top: 3px; display: block;">Ejemplo: Caroní</small>
                             </div>
                             <div style="width: 100%;">
+                                <label class="votacion-campo-label">Parroquia</label>
                                 <input type="text" class="m-v-parroquia" style="text-transform: uppercase; width: 100%; box-sizing: border-box;">
                                 <small style="opacity: 0.7; font-size: 11px; margin-top: 3px; display: block;">Ejemplo: Unare</small>
                             </div>
                             <div style="width: 100%;">
+                                <label class="votacion-campo-label">Centro de Votación</label>
                                 <input type="text" class="m-v-nombre" style="text-transform: uppercase; width: 100%; box-sizing: border-box;">
                                 <small style="opacity: 0.7; font-size: 11px; margin-top: 3px; display: block;">Ejemplo: U.E. Colegio Nazaret</small>
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1880,7 +1995,7 @@
                 errorEncontrado = true;
                 return;
             }
-            const regexTelefono = /^(0414|0422|0424|0412|0416|0426)-\d{7}$/;
+            const regexTelefono = /^(0414|0422|0424|0412|0416|0426|02\d{2})-\d{7}$/;
             if (telefono.value.trim() !== "" && !regexTelefono.test(telefono.value.trim())) {
                 mostrarAlerta("Por favor, revise el campo de teléfono señalado.", "error");
                 marcarCampoConError(telefono, "Formato inválido. Debe ser: 0412, 0422, 0424, 0414, 0416 o 0426.");
