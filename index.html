@@ -137,10 +137,10 @@
         }
 
         .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: background 0.3s, border-color 0.3s; }
-        .card-title { font-size: 18px; color: var(--primary-blue); border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-top: 0; margin-bottom: 20px; font-weight: 600; }
+        .card-title { font-size: 20px; color: var(--primary-blue); border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-top: 0; margin-bottom: 20px; font-weight: 600; }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px 22px; }
         .form-group { display: flex; flex-direction: column; }
-        .form-group label { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-dark); }
+        .form-group label { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: var(--text-dark); }
         .form-group input, .form-group select { padding: 10px; border: 1px solid var(--input-border); border-radius: 4px; font-size: 14px; background-color: var(--input-bg); color: var(--input-text); transition: border-color 0.2s, background-color 0.3s, color 0.3s; }
         .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--secondary-blue); }
         .form-group input:disabled { background-color: var(--disabled-bg); color: var(--disabled-color); font-weight: bold; }
@@ -165,7 +165,7 @@
         }
 
         .helper-text {
-            font-size: 12.5px;
+            font-size: 12px;
             color: #495057;
             font-weight: 500;
             margin-top: 6px;
@@ -241,7 +241,7 @@
             transition: background 0.3s, border-color 0.3s;
         }
         .checkbox-group-title {
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 600;
             color: var(--text-dark);
             margin-bottom: 8px;
@@ -547,7 +547,7 @@
                 <div class="form-group grid-votacion" style="margin-top: 5px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
                         <div>
-                            <label style="font-weight: 600; font-size: 13px; margin: 0; display: block;">Bombonas de Gas de la Vivienda</label>
+                            <label>Bombonas de Gas de la Vivienda</label>
                             <small class="helper-text">Si no tiene bombonas, no hace falta añadir nada.</small>
                         </div>
                         <button type="button" class="btn btn-primary btn-add-bombona" style="padding: 10px 16px; font-size: 14px;" onclick="agregarFilaBombona()">+ Añadir Bombona</button>
@@ -1648,7 +1648,7 @@
                     <div class="form-group grid-votacion" style="margin-top: 10px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
                             <div>
-                                <label style="font-weight: 600; font-size: 13px; margin: 0; display: block;">Mascotas del Miembro</label>
+                                <label>Mascotas del Miembro</label>
                                 <small class="helper-text">Si no tiene mascotas, no hace falta añadir nada.</small>
                             </div>
                             <button type="button" class="btn btn-primary btn-add-mascota" style="padding: 10px 16px; font-size: 14px;" onclick="agregarFilaMascota(${miembroContador})">+ Añadir Mascota</button>
