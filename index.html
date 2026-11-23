@@ -154,6 +154,20 @@
             width: 65px;
             flex-shrink: 0;
         }
+
+        .helper-text {
+            font-size: 12.5px;
+            color: #495057; /* Gris oscuro con buen contraste, sin competir con el label */
+            font-weight: 500;
+            margin-top: 4px;
+            display: block;
+            line-height: 1.3;
+        }
+
+        /* Ajuste automático para Modo Oscuro */
+        [data-theme="dark"] .helper-text {
+            color: #CBD5E0; /* Gris claro legible sobre fondo oscuro */
+        }
         .miembro-block { 
             border: 1px solid var(--border-color);
             border-top: none;
@@ -491,7 +505,7 @@
                 <div class="form-group">
                     <label>Número de Casa / Apto</label>
                     <input type="text" id="numeroCasaApto" style="text-transform: uppercase;" required pattern="^(?:PB-[1-4]|[123]-[1-4]|A[1-6]|B[1-5]|C[1-5]|D[1-35]|E[1-6]|0[1-3]|F[1-5]|G[1-6]|G1-A|G6A|H[1-5]|I[1-6]|J[1-5]|K[1-5]|L[1-4]|M[1-5]|N[1-4]|30-A[12]?|5-A[134]|9-A1|13-A|18-A|20-A2|23-A|25-A|33-A|38-A|41-A1|7-B|8-A|10-A|[1-9]|[1-4][0-9]|5[0-8])$" title="Ingrese un número de casa o apartamento válido">
-                    <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: A1, 10, PB-1</small>
+                    <small class="helper-text">Ejemplo: A1, 10, PB-1</small>
                 </div>
 
                 <div class="form-group">
@@ -530,7 +544,7 @@
                 <div class="form-group">
                     <label>Cantidad de Habitantes</label>
                     <input type="number" id="cantidadHabitantes" min="1" max="20" value="1" required onblur="ajustarCantidadMiembros(this)" onchange="ajustarCantidadMiembros(this)">
-                    <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Mínimo 1, máximo 20 personas (se actualiza al salir de la casilla)</small>
+                    <small class="helper-text">Mínimo 1, máximo 20 personas (se actualiza al salir de la casilla)</small>
                 </div>
                 
             </div>
@@ -1388,7 +1402,7 @@
                             oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]/g, '');"
                             pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(\\s[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$"
                             title="Ingrese nombre y apellido usando solo letras.">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: LUIS JOSE PÉREZ LOMEDA</small>
+                        <small class="helper-text">Ejemplo: LUIS JOSE PÉREZ LOMEDA</small>
                     </div>
                                         
                     <div class="form-group">
@@ -1408,7 +1422,7 @@
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '');"
                                 title="Ingrese entre 6 y 8 dígitos numéricos sin letras ni puntos.">
                         </div>
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: 25123456</small>
+                        <small class="helper-text">Ejemplo: 25123456</small>
                     </div>
                     
                     <div class="form-group">
@@ -1417,7 +1431,7 @@
                             oninput="formatearTelefono(this)"
                             pattern="^(0414|0422|0424|0412|0416|0426|02\d{2})-\d{7}$|^$" 
                             title="Ingrese un número celular o fijo de Venezuela válido (ej. 0412-1122333 o 0286-9123456).">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: 0412-1122333 o 0286-9123456</small>
+                        <small class="helper-text">Ejemplo: 0412-1122333 o 0286-9123456</small>
                     </div>
 
                     <div class="form-group">
@@ -1426,13 +1440,13 @@
                             oninput="formatearTelefono(this)"
                             pattern="^(0414|0422|0424|0412|0416|0426|02\d{2})-\d{7}$|^$" 
                             title="Ingrese un número celular o fijo de Venezuela válido (ej. 0412-1122333 o 0286-9123456).">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: 0412-1122333 o 0286-9123456</small>
+                        <small class="helper-text">Ejemplo: 0412-1122333 o 0286-9123456</small>
                     </div>
                     
                     <div class="form-group">
                         <label>Correo Electrónico</label>
                         <input type="text" class="m-correo" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$|^$" title="Ingrese un correo electrónico válido.">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Ejemplo: usuario@gmail.com</small>
+                        <small class="helper-text">Ejemplo: usuario@gmail.com</small>
                     </div>
                     
                     <div class="form-group">
@@ -1449,7 +1463,7 @@
                         <select class="m-embarazo">
                             <option value="NA" selected>NA</option>
                         </select>
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Si su genero es masculino, ignore este campo</small>
+                        <small class="helper-text">Si su género es masculino, ignore este campo</small>
                     </div>
                     
                     <div class="form-group">
@@ -1494,25 +1508,25 @@
                     <div class="form-group">
                         <label>Profesión</label>
                         <input type="text" style="text-transform: uppercase;" class="m-profesion" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$|^$" title="Solo letras y espacios.">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                        <small class="helper-text">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
                     
                     <div class="form-group">
                         <label>Ocupación</label>
                         <input type="text" style="text-transform: uppercase;" class="m-ocupacion" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$|^$" title="Solo letras y espacios.">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                        <small class="helper-text">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
 
                     <div class="form-group">
                         <label>Empresa</label>
                         <input type="text" style="text-transform: uppercase;" class="m-empresa" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\\-]+$|^$" title="Solo letras, números y signos comunes.">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                        <small class="helper-text">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
                     
                     <div class="form-group">
                         <label>Deporte Practicado</label>
                         <input type="text" style="text-transform: uppercase;" class="m-deporte" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$|^$" title="Solo letras y espacios.">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                        <small class="helper-text">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
                     
                     <div class="form-group">
@@ -1536,13 +1550,13 @@
                     <div class="form-group">
                         <label>Discapacidad</label>
                         <input type="text" style="text-transform: uppercase;" class="m-discapacidad" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\\-]+$|^$" title="Solo letras, números y signos comunes.">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                        <small class="helper-text">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
 
                     <div class="form-group">
                         <label>Medicamento</label>
                         <input type="text" style="text-transform: uppercase;" class="m-medicamento" pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s.,\\-]+$|^$" title="Solo letras, números y signos comunes.">
-                        <small style="opacity: 0.7; font-size: 11px; margin-top: 3px;">Opcional (si no aplica, dejar en blanco)</small>
+                        <small class="helper-text">Opcional (si no aplica, dejar en blanco)</small>
                     </div>
                     
                     <div class="checkbox-group-container">
@@ -1586,27 +1600,27 @@
                             <div style="width: 100%;">
                                 <label class="votacion-campo-label">Estado</label>
                                 <input type="text" class="m-v-estado" style="text-transform: uppercase; width: 100%; box-sizing: border-box;">
-                                <small style="opacity: 0.7; font-size: 11px; margin-top: 3px; display: block;">Ejemplo: Bolívar</small>
+                                <small class="helper-text">Ejemplo: Bolívar</small>
                             </div>
                             <div style="width: 100%;">
                                 <label class="votacion-campo-label">Ciudad</label>
                                 <input type="text" class="m-v-ciudad" style="text-transform: uppercase; width: 100%; box-sizing: border-box;">
-                                <small style="opacity: 0.7; font-size: 11px; margin-top: 3px; display: block;">Ejemplo: Puerto Ordaz</small>
+                                <small class="helper-text">Ejemplo: Puerto Ordaz</small>
                             </div>
                             <div style="width: 100%;">
                                 <label class="votacion-campo-label">Municipio</label>
                                 <input type="text" class="m-v-Municipio" style="text-transform: uppercase; width: 100%; box-sizing: border-box;">
-                                <small style="opacity: 0.7; font-size: 11px; margin-top: 3px; display: block;">Ejemplo: Caroní</small>
+                                <small class="helper-text">Ejemplo: Caroní</small>
                             </div>
                             <div style="width: 100%;">
                                 <label class="votacion-campo-label">Parroquia</label>
                                 <input type="text" class="m-v-parroquia" style="text-transform: uppercase; width: 100%; box-sizing: border-box;">
-                                <small style="opacity: 0.7; font-size: 11px; margin-top: 3px; display: block;">Ejemplo: Unare</small>
+                                <small class="helper-text">Ejemplo: Unare</small>
                             </div>
                             <div style="width: 100%;">
                                 <label class="votacion-campo-label">Centro de Votación</label>
                                 <input type="text" class="m-v-nombre" style="text-transform: uppercase; width: 100%; box-sizing: border-box;">
-                                <small style="opacity: 0.7; font-size: 11px; margin-top: 3px; display: block;">Ejemplo: U.E. Colegio Nazaret</small>
+                                <small class="helper-text">Ejemplo: U.E. Colegio Nazaret</small>
                             </div>
                         </div>
                     </div>
