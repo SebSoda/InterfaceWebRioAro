@@ -57,6 +57,15 @@
         }
         .theme-toggle-btn:hover { background: rgba(255, 255, 255, 0.35); }
 
+        .form-group input:disabled,
+.form-group select:disabled {
+    background-color: var(--disabled-bg);
+    color: var(--disabled-color);
+    font-weight: bold;
+    opacity: 1;
+    cursor: not-allowed;
+}
+
         /* Tarjeta de advertencia roja de alto contraste */
 .info-card {
     background-color: #FFF0F0;
@@ -1659,6 +1668,7 @@
                                 <label class="votacion-campo-label">Estado</label>
                                 <select class="m-v-estado" style="width: 100%; box-sizing: border-box;">
                                     <option value="" disabled selected>-- Seleccione estado --</option>
+                                    <option value="NA" hidden>NA</option>
                                     <option value="AMAZONAS">Amazonas</option>
                                     <option value="ANZOÁTEGUI">Anzoátegui</option>
                                     <option value="APURE">Apure</option>
@@ -1796,9 +1806,7 @@
         if (cneCheckbox.checked) {
             camposVotacion.forEach(input => {
                 if (input) {
-                    if (input.value === "NA") {
-                        input.value = input.tagName === "SELECT" ? "" : "";
-                    }
+                    if (input.value === "NA") input.value = "";
                     input.disabled = false;
                     input.required = true;
                 }
