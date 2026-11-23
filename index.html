@@ -531,12 +531,16 @@
                 <div class="form-group">
                     <label>Fecha de Ingreso a la Comunidad</label>
                     <input type="text" id="fechaIngreso" placeholder="DD/MM/AAAA" maxlength="10" required oninput="formatearEntradaFecha(this)" onblur="validarYCorregirFecha(this)">
+                    <small class="helper-text">Las barras (/) se ponen solas al escribir los números</small>
                 </div>
                 
                 <div class="form-group grid-votacion" style="margin-top: 5px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <label style="font-weight: 600; font-size: 13px; margin: 0;">Bombonas de Gas de la Vivienda</label>
-                        <button type="button" class="btn btn-primary btn-add-bombona" style="padding: 4px 10px; font-size: 13px;" onclick="agregarFilaBombona()">+ Añadir Bombona</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                        <div>
+                            <label style="font-weight: 600; font-size: 13px; margin: 0; display: block;">Bombonas de Gas de la Vivienda</label>
+                            <small class="helper-text">Si no tiene bombonas, no hace falta añadir nada.</small>
+                        </div>
+                        <button type="button" class="btn btn-primary btn-add-bombona" style="padding: 10px 16px; font-size: 14px;" onclick="agregarFilaBombona()">+ Añadir Bombona</button>
                     </div>
                     <div id="contenedorBombonas" style="display: flex; flex-direction: column; gap: 8px;"></div>
                 </div>
@@ -859,6 +863,25 @@
         actualizarOpcionesBombonasGlobal();
     }
 
+    function actualizarTextoVacioBombonas() {
+        const contenedor = document.getElementById('contenedorBombonas');
+        if (!contenedor) return;
+        let aviso = contenedor.querySelector('.aviso-vacio-bombonas');
+        const tieneFilas = contenedor.querySelectorAll('.fila-bombona').length > 0;
+
+        if (!tieneFilas) {
+            if (!aviso) {
+                aviso = document.createElement('div');
+                aviso.className = 'aviso-vacio-bombonas helper-text';
+                aviso.style.padding = '8px 0';
+                aviso.textContent = 'Sin bombonas registradas. Pulsa "+ Añadir Bombona" solo si deseas agregar alguna.';
+                contenedor.appendChild(aviso);
+            }
+        } else if (aviso) {
+            aviso.remove();
+        }
+    }
+
     function agregarFilaBombona() {
         const contenedor = document.getElementById('contenedorBombonas');
         if (!contenedor) return;
@@ -871,21 +894,25 @@
         filaDiv.style.cssText = 'display: flex; gap: 6px; align-items: center;';
 
         filaDiv.innerHTML = `
-            <input type="number" class="v-cantBombonaItem" style="width: 80px;" min="0" value="0" placeholder="0" 
+            <input type="number" class="v-cantBombonaItem" style="width: 85px;" min="1" value="1" placeholder="1" 
                 oninput="actualizarEstadoFilaBombona(this)" required>
             <select class="v-tipoBombonaItem" style="flex: 1;" onchange="actualizarTipoBombona(this)" required>
-                <option value="NO POSEE" selected>NO POSEE</option>
+                <option value="NO POSEE">NO POSEE</option>
             </select>
-            ${numFilas > 0 ? `<button type="button" class="btn btn-danger" style="padding: 6px 10px;" onclick="removerFilaBombona(this)">-</button>` : ''}
+            <button type="button" class="btn btn-danger" style="padding: 8px 12px;" onclick="removerFilaBombona(this)" title="Quitar fila">-</button>
         `;
 
         contenedor.appendChild(filaDiv);
+        actualizarTextoVacioBombonas();
+        actualizarOpcionesBombonasGlobal();
         const cantInput = filaDiv.querySelector('.v-cantBombonaItem');
         actualizarEstadoFilaBombona(cantInput);
+        guardarBorrador();
     }
 
     function removerFilaBombona(btn) {
         btn.parentElement.remove();
+        actualizarTextoVacioBombonas();
         actualizarOpcionesBombonasGlobal();
         guardarBorrador();
     }
@@ -1064,6 +1091,25 @@
         return "NA";
     }
 
+    function actualizarTextoVacioMascotas(idMiembro) {
+        const contenedor = document.getElementById(`contenedorMascotas_${idMiembro}`);
+        if (!contenedor) return;
+        let aviso = contenedor.querySelector('.aviso-vacio-mascotas');
+        const tieneFilas = contenedor.querySelectorAll('.fila-mascota').length > 0;
+
+        if (!tieneFilas) {
+            if (!aviso) {
+                aviso = document.createElement('div');
+                aviso.className = 'aviso-vacio-mascotas helper-text';
+                aviso.style.padding = '8px 0';
+                aviso.textContent = 'Sin mascotas registradas. Pulsa "+ Añadir Mascota" solo si deseas agregar alguna.';
+                contenedor.appendChild(aviso);
+            }
+        } else if (aviso) {
+            aviso.remove();
+        }
+    }
+
     function agregarFilaMascota(idMiembro) {
         const block = document.getElementById(`miembro_${idMiembro}`);
         const contenedor = document.getElementById(`contenedorMascotas_${idMiembro}`);
@@ -1077,21 +1123,25 @@
         filaDiv.style.cssText = 'display: flex; gap: 6px; align-items: center;';
 
         filaDiv.innerHTML = `
-            <input type="number" class="m-cantMascotaItem" style="width: 80px;" min="0" value="0" placeholder="0" 
+            <input type="number" class="m-cantMascotaItem" style="width: 85px;" min="1" value="1" placeholder="1" 
                 oninput="actualizarEstadoFilaMascota(this)" required>
             <select class="m-tipoMascotaItem" style="flex: 1;" onchange="actualizarTipoMascota(this)" required>
-                <option value="NA" selected>NA</option>
+                <option value="NA">NA</option>
             </select>
-            ${numFilas > 0 ? `<button type="button" class="btn btn-danger" style="padding: 6px 10px;" onclick="removerFilaMascota(this, ${idMiembro})">-</button>` : ''}
+            <button type="button" class="btn btn-danger" style="padding: 8px 12px;" onclick="removerFilaMascota(this, ${idMiembro})" title="Quitar fila">-</button>
         `;
 
         contenedor.appendChild(filaDiv);
+        actualizarTextoVacioMascotas(idMiembro);
+        actualizarOpcionesMascotasMiembro(idMiembro);
         const cantInput = filaDiv.querySelector('.m-cantMascotaItem');
         actualizarEstadoFilaMascota(cantInput);
+        guardarBorrador();
     }
 
     function removerFilaMascota(btn, idMiembro) {
         btn.parentElement.remove();
+        actualizarTextoVacioMascotas(idMiembro);
         actualizarOpcionesMascotasMiembro(idMiembro);
         guardarBorrador();
     }
@@ -1210,7 +1260,6 @@
                 medicamento: block.querySelector('.m-medicamento').value,
                 cneInscrito: block.querySelector('.m-cne').checked,
                 vEstado: block.querySelector('.m-v-estado').value,
-                vCiudad: block.querySelector('.m-v-ciudad').value,
                 vMunicipio: block.querySelector('.m-v-Municipio').value,
                 vParroquia: block.querySelector('.m-v-parroquia').value,
                 vNombre: block.querySelector('.m-v-nombre').value,
@@ -1264,6 +1313,9 @@
                 actualizarOpcionesBombonasGlobal();
             }
 
+            actualizarTextoVacioBombonas();
+            actualizarOpcionesBombonasGlobal();
+
             if (data.miembros && data.miembros.length > 0) {
                 const containerM = document.getElementById('miembrosContainer');
                 containerM.innerHTML = '';
@@ -1304,7 +1356,6 @@
                     actualizarCNE(miembroContador);
                     if (m.cneInscrito) {
                         block.querySelector('.m-v-estado').value = m.vEstado || '';
-                        block.querySelector('.m-v-ciudad').value = m.vCiudad || '';
                         block.querySelector('.m-v-Municipio').value = m.vMunicipio || '';
                         block.querySelector('.m-v-parroquia').value = m.vParroquia || '';
                         block.querySelector('.m-v-nombre').value = m.vNombre || '';
@@ -1349,6 +1400,9 @@
                         });
                         actualizarOpcionesMascotasMiembro(miembroContador);
                     }
+
+                    actualizarTextoVacioMascotas(miembroContador);
+                    actualizarOpcionesMascotasMiembro(miembroContador);
                 });
                 actualizarTitulosMiembros();
                 actualizarBotonesEliminar();
@@ -1408,6 +1462,7 @@
                     <div class="form-group">
                         <label>Fecha de Nacimiento (DD/MM/AAAA)</label>
                         <input type="text" class="m-fechaNac" placeholder="DD/MM/AAAA" maxlength="10" required oninput="formatearEntradaFecha(this)" onblur="validarYCorregirFecha(this); calcularEdadYValidarId(${miembroContador})">
+                        <small class="helper-text">Las barras (/) se ponen solas al escribir los números</small>
                     </div>
 
                     <div class="form-group">
@@ -1581,9 +1636,12 @@
                     </div>
 
                     <div class="form-group grid-votacion" style="margin-top: 10px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <label style="font-weight: 600; font-size: 13px; margin: 0;">Mascotas del Miembro</label>
-                            <button type="button" class="btn btn-primary btn-add-mascota" style="padding: 4px 10px; font-size: 13px;" onclick="agregarFilaMascota(${miembroContador})">+ Añadir Mascota</button>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                            <div>
+                                <label style="font-weight: 600; font-size: 13px; margin: 0; display: block;">Mascotas del Miembro</label>
+                                <small class="helper-text">Si no tiene mascotas, no hace falta añadir nada.</small>
+                            </div>
+                            <button type="button" class="btn btn-primary btn-add-mascota" style="padding: 10px 16px; font-size: 14px;" onclick="agregarFilaMascota(${miembroContador})">+ Añadir Mascota</button>
                         </div>
                         <div id="contenedorMascotas_${miembroContador}" style="display: flex; flex-direction: column; gap: 8px;"></div>
                     </div>
@@ -1599,13 +1657,34 @@
                         <div class="grid-votacion-inputs">
                             <div style="width: 100%;">
                                 <label class="votacion-campo-label">Estado</label>
-                                <input type="text" class="m-v-estado" style="text-transform: uppercase; width: 100%; box-sizing: border-box;">
-                                <small class="helper-text">Ejemplo: Bolívar</small>
-                            </div>
-                            <div style="width: 100%;">
-                                <label class="votacion-campo-label">Ciudad</label>
-                                <input type="text" class="m-v-ciudad" style="text-transform: uppercase; width: 100%; box-sizing: border-box;">
-                                <small class="helper-text">Ejemplo: Puerto Ordaz</small>
+                                <select class="m-v-estado" style="width: 100%; box-sizing: border-box;">
+                                    <option value="" disabled selected>-- Seleccione estado --</option>
+                                    <option value="AMAZONAS">Amazonas</option>
+                                    <option value="ANZOÁTEGUI">Anzoátegui</option>
+                                    <option value="APURE">Apure</option>
+                                    <option value="ARAGUA">Aragua</option>
+                                    <option value="BARINAS">Barinas</option>
+                                    <option value="BOLÍVAR">Bolívar</option>
+                                    <option value="CARABOBO">Carabobo</option>
+                                    <option value="COJEDES">Cojedes</option>
+                                    <option value="DELTA AMACURO">Delta Amacuro</option>
+                                    <option value="DEPENDENCIAS FEDERALES">Dependencias Federales</option>
+                                    <option value="DISTRITO CAPITAL">Distrito Capital</option>
+                                    <option value="FALCÓN">Falcón</option>
+                                    <option value="GUÁRICO">Guárico</option>
+                                    <option value="LA GUAIRA">La Guaira</option>
+                                    <option value="LARA">Lara</option>
+                                    <option value="MÉRIDA">Mérida</option>
+                                    <option value="MIRANDA">Miranda</option>
+                                    <option value="MONAGAS">Monagas</option>
+                                    <option value="NUEVA ESPARTA">Nueva Esparta</option>
+                                    <option value="PORTUGUESA">Portuguesa</option>
+                                    <option value="SUCRE">Sucre</option>
+                                    <option value="TÁCHIRA">Táchira</option>
+                                    <option value="TRUJILLO">Trujillo</option>
+                                    <option value="YARACUY">Yaracuy</option>
+                                    <option value="ZULIA">Zulia</option>
+                                </select>
                             </div>
                             <div style="width: 100%;">
                                 <label class="votacion-campo-label">Municipio</label>
@@ -1632,7 +1711,7 @@
         actualizarEmbarazo(miembroContador);
         actualizarCNE(miembroContador);
         
-        agregarFilaMascota(miembroContador);
+        actualizarTextoVacioMascotas(miembroContador);
         actualizarTitulosMiembros();
         actualizarBotonesEliminar();
     }
@@ -1697,11 +1776,10 @@
 
         const cneCheckbox = block.querySelector('.m-cne');
         const estInput = block.querySelector('.m-v-estado');
-        const ciuInput = block.querySelector('.m-v-ciudad');
         const munInput = block.querySelector('.m-v-Municipio');
         const parInput = block.querySelector('.m-v-parroquia');
         const nomInput = block.querySelector('.m-v-nombre');
-        const camposVotacion = [estInput, ciuInput, munInput, parInput, nomInput];
+        const camposVotacion = [estInput, munInput, parInput, nomInput];
 
         if (cneCheckbox.disabled) {
             cneCheckbox.checked = false;
@@ -1718,7 +1796,9 @@
         if (cneCheckbox.checked) {
             camposVotacion.forEach(input => {
                 if (input) {
-                    if (input.value === "NA") input.value = "";
+                    if (input.value === "NA") {
+                        input.value = input.tagName === "SELECT" ? "" : "";
+                    }
                     input.disabled = false;
                     input.required = true;
                 }
@@ -2099,12 +2179,11 @@
 
             const cneInscrito = block.querySelector('.m-cne').checked;
             const est = block.querySelector('.m-v-estado').value.trim().toUpperCase() || "NA";
-            const ciu = block.querySelector('.m-v-ciudad').value.trim().toUpperCase() || "NA";
             const mun = block.querySelector('.m-v-Municipio').value.trim().toUpperCase() || "NA";
             const par = block.querySelector('.m-v-parroquia').value.trim().toUpperCase() || "NA";
             const nom = block.querySelector('.m-v-nombre').value.trim().toUpperCase() || "NA";
 
-            let centroVotacionFinal = (edad >= 15 && cneInscrito) ? `${est}/${ciu}/${mun}/${par}/${nom}` : "NA";
+            let centroVotacionFinal = (edad >= 15 && cneInscrito) ? `${est}/${mun}/${par}/${nom}` : "NA";
 
             const miembro = {
                 nombreCompleto: block.querySelector('.m-nombre').value.toUpperCase(),
@@ -2203,7 +2282,8 @@
         
         const cargado = cargarBorrador();
         if (!cargado) {
-            agregarFilaBombona();
+            actualizarTextoVacioBombonas();
+            actualizarOpcionesBombonasGlobal();
             const inputHabitantes = document.getElementById('cantidadHabitantes');
             const cantidadInicial = inputHabitantes ? parseInt(inputHabitantes.value, 10) || 1 : 1;
             for (let i = 0; i < cantidadInicial; i++) {
